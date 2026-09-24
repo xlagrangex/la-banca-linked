@@ -1,213 +1,180 @@
 import type { Design, DesignElement, DesignFormat, Slide } from "./types";
 
-export const BRAND = {
-  navy: "#1B2D4F",
-  blue: "#0A66C2",
-  sky: "#70B5F9",
-  paper: "#F7F5F0",
-  ink: "#16202E",
-  amber: "#F5B83D",
-  white: "#FFFFFF",
-};
+// Tutto viene dalla pagina 1 del modello Canva "Template contenuti LinkedIn" (1200×1200):
+// coordinate, corpi e spaziature sono quelli letti dal file Canva, non arrotondati.
 
-export const SWATCHES = [
-  BRAND.navy,
-  BRAND.blue,
-  BRAND.sky,
-  BRAND.paper,
-  BRAND.white,
-  BRAND.ink,
-  BRAND.amber,
-  "#E4572E",
-  "#2BA84A",
-  "#EDE7FF",
-];
+export const BIZ_GRADIENT = "linear-gradient(90deg, #2f6bff 0%, #e21ecf 50%, #ff7a1a 100%)";
+export const BIZ_FONT = "'Inter 18pt'";
+
+export const INK = "#0F1015";
+
+export const SWATCHES = [BIZ_GRADIENT, "#000000", INK, "#FFFFFF", "#2F6BFF", "#E21ECF", "#FF7A1A"];
+export const TEXT_SWATCHES = SWATCHES.filter((c) => c.startsWith("#"));
+
+export const BACKGROUNDS = [{ label: "Sfumato", src: "/brand/bizstudio/sfondo.png" }];
+
+const A = "/brand/bizstudio/";
 
 const DIMS: Record<DesignFormat, { w: number; h: number }> = {
   portrait: { w: 1080, h: 1350 },
   square: { w: 1080, h: 1080 },
   landscape: { w: 1200, h: 627 },
+  linkedin: { w: 1200, h: 1200 },
 };
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
 
-const text = (p: Partial<DesignElement>): DesignElement => ({
+export const text = (p: Partial<DesignElement>): DesignElement => ({
   id: uid(),
   type: "text",
-  x: 90,
-  y: 90,
-  w: 900,
-  h: 120,
+  x: 187.134,
+  y: 226.8,
+  w: 785.604,
+  h: 146,
   text: "Testo",
-  fontSize: 44,
-  fontWeight: 500,
-  fontFamily: "var(--font-inter)",
-  color: BRAND.ink,
+  fontSize: 132.204,
+  fontWeight: 700,
+  fontFamily: BIZ_FONT,
+  color: INK,
   align: "left",
-  lineHeight: 1.25,
+  lineHeight: 146 / 132.204,
+  letterSpacing: -0.051,
+  kerning: false,
   ...p,
 });
 
-const shape = (p: Partial<DesignElement>): DesignElement => ({
+export const shape = (p: Partial<DesignElement>): DesignElement => ({
   id: uid(),
   type: "shape",
-  x: 90,
-  y: 90,
-  w: 120,
-  h: 10,
-  fill: BRAND.blue,
+  x: 0,
+  y: 0,
+  w: 300,
+  h: 300,
+  fill: BIZ_GRADIENT,
   radius: 0,
   ...p,
 });
 
-export type TemplateKey = "copertina" | "punto" | "citazione" | "chiusura" | "vuota" | "immagine";
+const image = (p: Partial<DesignElement>): DesignElement => ({ id: uid(), type: "image", x: 0, y: 0, w: 100, h: 100, fit: "cover", ...p });
+
+const topBar = () => shape({ x: -14.932, y: -43.4958, w: 1214.93, h: 62.6 });
+
+// Firma "card": riquadro bianco con razzo, nome, ruolo e foto.
+const cardFooter = () => [
+  shape({ x: 187.134, y: 1023.9, w: 894.461, h: 148.038, fill: "#FEFEFE", radius: 74.019 }),
+  image({ x: 917.338, y: 909.036, w: 307.633, h: 312.131, src: A + "foto-vincenzo.png" }),
+  text({ x: 331.553, y: 1042.742, w: 368, h: 69, text: "Vincenzo Petrone", fontSize: 49.3818, color: "#000000", lineHeight: 69 / 49.3818, letterSpacing: -0.091 }),
+  text({ x: 331.553, y: 1101.997, w: 590, h: 53, text: "Ingegnere AI  e Founder di BizStudio", fontSize: 38.1336, fontWeight: 500, color: "#000000", lineHeight: 53 / 38.1336, letterSpacing: -0.053 }),
+  image({ x: 197.974, y: 1039.07, w: 130.926, h: 132.866, src: A + "logo-razzo.png" }),
+];
+
+const titleBlock = (t: string, p: Partial<DesignElement> = {}) => text({ text: t, h: 146 * (t.split("\n").length || 1), accent: BIZ_GRADIENT, ...p });
+
+const bodyText = (t: string, p: Partial<DesignElement> = {}) =>
+  text({ x: 197.97, y: 430.35, w: 785.6, h: 190, text: t, fontSize: 83.04, fontWeight: 400, lineHeight: 1.098, ...p });
+
+// Bottone pillola con la scritta centrata, stesse misure della pillola del sito in copertina.
+export const pillButton = (label: string, x = 188.18, y = 712.75, w = 436.26, h = 123.59): DesignElement[] => [
+  shape({ x, y, w, h, radius: h / 2 }),
+  text({ x, y: y + h / 2 - 30.07, w, h: 61, text: label, fontSize: 43.38, color: "#FFFFFF", align: "center", lineHeight: 1.386, letterSpacing: 0 }),
+];
+
+export type TemplateKey = "bizstudio" | "punto" | "citazione" | "immagine" | "chiusura" | "vuota";
 
 export const TEMPLATES: { key: TemplateKey; label: string }[] = [
-  { key: "copertina", label: "Copertina" },
-  { key: "punto", label: "Punto numerato" },
+  { key: "bizstudio", label: "Copertina" },
+  { key: "punto", label: "Punto" },
   { key: "citazione", label: "Citazione" },
   { key: "immagine", label: "Foto + titolo" },
   { key: "chiusura", label: "Chiusura / CTA" },
   { key: "vuota", label: "Vuota" },
 ];
 
-export function makeSlide(key: TemplateKey, format: DesignFormat, n = 1): Slide {
-  const { w, h } = DIMS[format];
-  const pad = format === "landscape" ? 70 : 90;
-  const inner = w - pad * 2;
-  const k = format === "landscape" ? 0.7 : 1;
-  const footer = text({
-    x: pad,
-    y: h - pad - 40,
-    w: inner,
-    h: 40,
-    text: "Vincenzo Petrone · Bizstudio",
-    fontSize: 26 * k,
-    fontWeight: 600,
-    fontFamily: "var(--font-poppins)",
-  });
+function base(elements: DesignElement[], bg = BACKGROUNDS[0].src): Slide {
+  return { id: uid(), background: "#FFFFFF", backgroundImageId: null, backgroundSrc: bg, overlay: 0, elements };
+}
 
+function layout(key: TemplateKey): Slide {
   switch (key) {
-    case "copertina":
-      return {
-        id: uid(),
-        background: BRAND.navy,
-        backgroundImageId: null,
-        overlay: 0.55,
-        elements: [
-          shape({ x: pad, y: pad, w: 90, h: 10, fill: BRAND.amber, radius: 5 }),
-          text({ x: pad, y: pad + 50, w: inner, h: 50, text: "IL PUNTO È QUESTO", fontSize: 28 * k, fontWeight: 700, fontFamily: "var(--font-poppins)", color: BRAND.sky }),
-          text({
-            x: pad,
-            y: h * 0.3,
-            w: inner,
-            h: h * 0.4,
-            text: "Il titolo che ferma lo scroll va qui",
-            fontSize: 104 * k,
-            fontWeight: 800,
-            fontFamily: "var(--font-poppins)",
-            color: BRAND.white,
-            lineHeight: 1.05,
-          }),
-          { ...footer, color: BRAND.white, w: inner * 0.6 },
-          text({ x: pad + inner * 0.6, y: h - pad - 40, w: inner * 0.4, h: 40, text: "Scorri →", fontSize: 26 * k, fontWeight: 700, fontFamily: "var(--font-poppins)", color: BRAND.amber, align: "right" }),
-        ],
-      };
+    case "bizstudio":
+      return base([
+        cardFooter()[0],
+        cardFooter()[1],
+        titleBlock("Frase di\nEsempio per\n*Post Linkedin*", { x: 199.732, y: 227.236, h: 438 }),
+        topBar(),
+        ...cardFooter().slice(2, 4),
+        shape({ x: 187.134, y: 678.681, w: 436.263, h: 123.587, radius: 61.7935 }),
+        text({ x: 223.818, y: 710.2795, w: 370, h: 61, text: "www.bizstudio.it", fontSize: 43.2845, fontWeight: 400, color: "#FFFFFF", lineHeight: 45 / 32.2536, letterSpacing: 0 }),
+        cardFooter()[4],
+      ]);
     case "punto":
-      return {
-        id: uid(),
-        background: BRAND.paper,
-        backgroundImageId: null,
-        overlay: 0,
-        elements: [
-          text({ x: pad, y: pad, w: 300, h: 170, text: String(n).padStart(2, "0"), fontSize: 150 * k, fontWeight: 800, fontFamily: "var(--font-poppins)", color: BRAND.blue, lineHeight: 1 }),
-          text({ x: pad, y: pad + 230 * k, w: inner, h: 200, text: "Il concetto in una riga", fontSize: 68 * k, fontWeight: 700, fontFamily: "var(--font-poppins)", color: BRAND.navy, lineHeight: 1.1 }),
-          text({
-            x: pad,
-            y: pad + 470 * k,
-            w: inner,
-            h: 400 * k,
-            text: "Due o tre righe che spiegano il perché. Concreto, con un esempio vero.",
-            fontSize: 40 * k,
-            fontWeight: 400,
-            color: "#3B4656",
-            lineHeight: 1.4,
-          }),
-          { ...footer, color: BRAND.navy },
-        ],
-      };
+      return base([
+        topBar(),
+        titleBlock("Il concetto\nin una *riga*", { h: 292 }),
+        bodyText("Due o tre righe che spiegano il perché. Concreto, con un esempio vero.", { y: 560, w: 760, fontSize: 52, lineHeight: 1.3, h: 300 }),
+        ...cardFooter(),
+      ]);
     case "citazione":
-      return {
-        id: uid(),
-        background: BRAND.blue,
-        backgroundImageId: null,
-        overlay: 0.4,
-        elements: [
-          text({ x: pad, y: pad, w: 200, h: 200, text: "“", fontSize: 260 * k, fontWeight: 400, fontFamily: "var(--font-dmserif)", color: BRAND.sky, lineHeight: 1 }),
-          text({
-            x: pad,
-            y: h * 0.3,
-            w: inner,
-            h: h * 0.4,
-            text: "Una frase che vale la pena salvare.",
-            fontSize: 84 * k,
-            fontWeight: 400,
-            fontFamily: "var(--font-dmserif)",
-            color: BRAND.white,
-            lineHeight: 1.12,
-          }),
-          { ...footer, color: BRAND.white },
-        ],
-      };
+      return base([
+        topBar(),
+        text({ x: 187.134, y: 150, w: 300, h: 200, text: "*“*", fontSize: 260, lineHeight: 1, accent: BIZ_GRADIENT }),
+        titleBlock("Una frase che vale\nla pena *salvare*.", { y: 380, fontSize: 96, lineHeight: 1.104, h: 320 }),
+        ...cardFooter(),
+      ]);
     case "immagine":
-      return {
-        id: uid(),
-        background: BRAND.white,
-        backgroundImageId: null,
-        overlay: 0,
-        elements: [
-          { id: uid(), type: "image", x: pad, y: pad, w: inner, h: h * 0.52, fit: "cover", radius: 24 },
-          text({ x: pad, y: pad + h * 0.52 + 50, w: inner, h: 220, text: "Cosa si vede in questa foto, e perché conta", fontSize: 60 * k, fontWeight: 700, fontFamily: "var(--font-poppins)", color: BRAND.navy, lineHeight: 1.12 }),
-          { ...footer, color: BRAND.navy },
-        ],
-      };
+      return base([
+        topBar(),
+        image({ x: 187.134, y: 110, w: 825.73, h: 480, radius: 36 }),
+        titleBlock("Cosa si vede\nin *questa foto*", { y: 640, fontSize: 88, lineHeight: 1.104, h: 200 }),
+        ...cardFooter(),
+      ]);
     case "chiusura":
-      return {
-        id: uid(),
-        background: BRAND.navy,
-        backgroundImageId: null,
-        overlay: 0.5,
-        elements: [
-          text({ x: pad, y: h * 0.28, w: inner, h: 260, text: "Ti è stato utile?", fontSize: 96 * k, fontWeight: 800, fontFamily: "var(--font-poppins)", color: BRAND.white, lineHeight: 1.05 }),
-          text({
-            x: pad,
-            y: h * 0.28 + 200 * k,
-            w: inner,
-            h: 240,
-            text: "Salvalo per dopo e seguimi: ogni settimana racconto un sito visto da dentro.",
-            fontSize: 42 * k,
-            fontWeight: 400,
-            color: "#C9D3E3",
-            lineHeight: 1.35,
-          }),
-          shape({ x: pad, y: h - pad - 110, w: 360, h: 72, fill: BRAND.blue, radius: 36 }),
-          text({ x: pad, y: h - pad - 92, w: 360, h: 40, text: "Segui Vincenzo", fontSize: 30 * k, fontWeight: 700, fontFamily: "var(--font-poppins)", color: BRAND.white, align: "center" }),
-        ],
-      };
+      return base([
+        topBar(),
+        titleBlock("Ti è stato\n*utile?*", { h: 292 }),
+        bodyText("Salvalo per dopo e seguimi\nper il prossimo.", { y: 540, fontSize: 60, h: 140 }),
+        ...pillButton("Seguimi", 188.18, 740),
+        ...cardFooter(),
+      ]);
     default:
-      return { id: uid(), background: BRAND.white, backgroundImageId: null, overlay: 0, elements: [] };
+      return base([topBar()]);
   }
+}
+
+// I modelli sono disegnati su 1200×1200: negli altri formati si scala in modo uniforme,
+// e la firma in basso resta agganciata al fondo.
+function fit(slide: Slide, format: DesignFormat): Slide {
+  const { w, h } = DIMS[format];
+  if (w === 1200 && h === 1200) return slide;
+  const k = Math.min(w, h) / 1200;
+  const dx = (w - 1200 * k) / 2;
+  return {
+    ...slide,
+    elements: slide.elements.map((e) => ({
+      ...e,
+      x: dx + e.x * k,
+      y: e.y > 820 ? h - (1200 - e.y) * k : e.y * k,
+      w: e.w * k,
+      h: e.h * k,
+      fontSize: e.fontSize ? e.fontSize * k : undefined,
+      radius: e.radius ? e.radius * k : e.radius,
+    })),
+  };
+}
+
+export function makeSlide(key: TemplateKey, format: DesignFormat): Slide {
+  return fit(layout(key), format);
 }
 
 export function newDesign(kind: Design["kind"], format: DesignFormat, name?: string): Partial<Design> {
   const slides =
     kind === "carosello"
-      ? [makeSlide("copertina", format), makeSlide("punto", format, 1), makeSlide("punto", format, 2), makeSlide("chiusura", format)]
-      : [makeSlide("copertina", format)];
+      ? (["bizstudio", "punto", "punto", "chiusura"] as TemplateKey[]).map((k) => makeSlide(k, format))
+      : [makeSlide("bizstudio", format)];
   return { name: name ?? (kind === "carosello" ? "Nuovo carosello" : "Nuova grafica"), kind, format, slides };
 }
 
-// Cambiando formato si riscalano posizioni e dimensioni, così il layout resta proporzionato.
+// Cambiando formato si riscala in modo uniforme (cerchi e pillole restano tali).
 export function reformat(slides: Slide[], from: DesignFormat, to: DesignFormat): Slide[] {
   const a = DIMS[from];
   const b = DIMS[to];
@@ -218,11 +185,12 @@ export function reformat(slides: Slide[], from: DesignFormat, to: DesignFormat):
     ...s,
     elements: s.elements.map((e) => ({
       ...e,
-      x: Math.round(e.x * sx),
-      y: Math.round(e.y * sy),
-      w: Math.round(e.w * sx),
-      h: Math.round(e.h * sy),
-      fontSize: e.fontSize ? Math.round(e.fontSize * sf) : e.fontSize,
+      x: e.x * sx,
+      y: e.y * sy,
+      w: e.w * sf,
+      h: e.h * sf,
+      fontSize: e.fontSize ? e.fontSize * sf : e.fontSize,
+      radius: e.radius ? e.radius * sf : e.radius,
     })),
   }));
 }

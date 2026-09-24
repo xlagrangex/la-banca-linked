@@ -48,7 +48,7 @@ export interface ImageAsset {
   updatedAt: string;
 }
 
-export type DesignFormat = "portrait" | "square" | "landscape";
+export type DesignFormat = "portrait" | "square" | "landscape" | "linkedin";
 
 export interface DesignElement {
   id: string;
@@ -64,7 +64,11 @@ export interface DesignElement {
   color?: string;
   align?: "left" | "center" | "right";
   lineHeight?: number;
+  letterSpacing?: number;
+  kerning?: boolean;
+  accent?: string;
   imageId?: string;
+  src?: string;
   fit?: "cover" | "contain";
   fill?: string;
   radius?: number;
@@ -75,6 +79,7 @@ export interface Slide {
   id: string;
   background: string;
   backgroundImageId: string | null;
+  backgroundSrc?: string | null;
   overlay: number;
   elements: DesignElement[];
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { DesignElement, DesignFormat, Slide } from "@/lib/types";
-import { ElementContent, FORMATS, SlideBackground } from "./SlideView";
+import { ElementContent, FORMATS, SlideBackground, textStyle } from "./SlideView";
 
 interface Props {
   slide: Slide;
@@ -155,18 +155,7 @@ export default function EditorCanvas({ slide, format, selectedId, onSelect, onCh
                       onChange(el.id, { text: e.currentTarget.innerText }, true);
                       setEditingId(null);
                     }}
-                    style={{
-                      width: "100%",
-                      minHeight: "100%",
-                      fontSize: el.fontSize,
-                      fontWeight: el.fontWeight,
-                      fontFamily: el.fontFamily,
-                      color: el.color,
-                      textAlign: el.align,
-                      lineHeight: el.lineHeight ?? 1.2,
-                      whiteSpace: "pre-wrap",
-                      outline: "none",
-                    }}
+                    style={{ width: "100%", minHeight: "100%", ...textStyle(el), outline: "none" }}
                   >
                     {el.text}
                   </div>

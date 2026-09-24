@@ -20,7 +20,7 @@ export default function EditorList() {
   const designs = useStore((s) => s.designs);
 
   const create = async (kind: Design["kind"]) => {
-    const d = await createItem("designs", newDesign(kind, "portrait"));
+    const d = await createItem("designs", newDesign(kind, "linkedin"));
     router.push(`/editor/${d.id}`);
   };
 

@@ -27,6 +27,10 @@ import {
   LayoutTemplate,
   X,
   FileText,
+  Circle,
+  RectangleHorizontal,
+  Minus,
+  Pill,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,17 +48,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ImagePicker from "@/components/app/ImagePicker";
 import EditorCanvas from "@/components/design/EditorCanvas";
-import SlideView, { FONTS, FORMATS } from "@/components/design/SlideView";
+import SlideView, { FORMATS } from "@/components/design/SlideView";
 import { imageUrl, updateItem, uploadImages, useStore } from "@/lib/client-store";
-import { BRAND, makeSlide, reformat, SWATCHES, TEMPLATES, uid, type TemplateKey } from "@/lib/design-templates";
+import {
+  BACKGROUNDS,
+  BIZ_GRADIENT,
+  makeSlide,
+  pillButton,
+  reformat,
+  shape,
+  SWATCHES,
+  TEMPLATES,
+  text,
+  TEXT_SWATCHES,
+  uid,
+  type TemplateKey,
+} from "@/lib/design-templates";
 import type { DesignElement, DesignFormat, Slide } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-function ColorField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function ColorField({ value, onChange, swatches = SWATCHES }: { value: string; onChange: (v: string) => void; swatches?: string[] }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-1.5">
-        {SWATCHES.map((c) => (
+        {swatches.map((c) => (
           <button
             key={c}
             onClick={() => onChange(c)}
@@ -236,8 +253,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
   const setDesign = (patch: Parameters<typeof updateItem<"designs">>[2]) => updateItem("designs", design.id, patch, 500);
 
   const addSlide = (key: TemplateKey) => {
-    const n = slides.filter((s) => s.elements.some((e) => /^\d{2}$/.test(e.text ?? ""))).length + 1;
-    const s = makeSlide(key, design.format, n);
+    const s = makeSlide(key, design.format);
     const next = [...slides.slice(0, slideIdx + 1), s, ...slides.slice(slideIdx + 1)];
     save(next);
     if (design.kind === "statica" && next.length > 1) setDesign({ kind: "carosello" });
@@ -349,21 +365,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
           variant="ghost"
           size="sm"
           onClick={() =>
-            addElement({
-              id: uid(),
-              type: "text",
-              x: 90,
-              y: h / 2 - 60,
-              w: w - 180,
-              h: 120,
-              text: "Nuovo testo",
-              fontSize: 56,
-              fontWeight: 700,
-              fontFamily: "var(--font-poppins)",
-              color: slide.background === BRAND.paper || slide.background === BRAND.white ? BRAND.navy : BRAND.white,
-              align: "left",
-              lineHeight: 1.15,
-            })
+            addElement(text({ x: w * 0.156, y: h / 2 - 73, w: w * 0.655, h: 146, text: "Nuovo testo", accent: BIZ_GRADIENT }))
           }
         >
           <Type className="h-4 w-4" /> Testo
@@ -371,13 +373,43 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
         <Button variant="ghost" size="sm" onClick={() => setPicker("new")}>
           <ImagePlus className="h-4 w-4" /> Immagine
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => addElement({ id: uid(), type: "shape", x: w / 2 - 150, y: h / 2 - 150, w: 300, h: 300, fill: BRAND.blue, radius: 24 })}
-        >
-          <Square className="h-4 w-4" /> Forma
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <Square className="h-4 w-4" /> Forma
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => addElement(shape({ x: w / 2 - 200, y: h / 2 - 150, w: 400, h: 300 }))}>
+              <Square className="h-4 w-4" /> Rettangolo
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addElement(shape({ x: w / 2 - 200, y: h / 2 - 150, w: 400, h: 300, radius: 36 }))}>
+              <RectangleHorizontal className="h-4 w-4" /> Rettangolo arrotondato
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addElement(shape({ x: w / 2 - 150, y: h / 2 - 150, w: 300, h: 300, radius: 9999 }))}>
+              <Circle className="h-4 w-4" /> Cerchio
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addElement(shape({ x: w / 2 - 218, y: h / 2 - 62, w: 436.26, h: 123.59, radius: 61.8 }))}>
+              <Pill className="h-4 w-4" /> Pillola
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                const [pill, label] = pillButton("CTA", w / 2 - 218, h / 2 - 62);
+                patchSlide({ elements: [...slide.elements, pill, label] });
+                setSelectedId(label.id);
+              }}
+            >
+              <Pill className="h-4 w-4" /> Bottone pillola con testo
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => addElement(shape({ x: -14.932, y: -43.4958, w: w + 15, h: 62.6 }))}>
+              <Minus className="h-4 w-4" /> Barra sfumata in alto
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addElement(shape({ x: w / 2 - 200, y: h / 2 - 3, w: 400, h: 6, radius: 3 }))}>
+              <Minus className="h-4 w-4" /> Linea
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <div className="mx-2 h-6 w-px bg-border" />
         <Button variant="ghost" size="icon" onClick={undo} disabled={!hist.undo} title="Annulla (⌘Z)">
           <Undo2 className="h-4 w-4" />
@@ -509,18 +541,6 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                     <Textarea rows={4} value={selected.text} onChange={(e) => patchEl(selected.id, { text: e.target.value })} />
                   </Section>
                   <Section title="Tipografia">
-                    <Select value={selected.fontFamily} onValueChange={(v) => patchEl(selected.id, { fontFamily: v })}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {FONTS.map((f) => (
-                          <SelectItem key={f.value} value={f.value}>
-                            <span style={{ fontFamily: f.value }}>{f.label}</span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <div className="grid grid-cols-2 gap-2">
                       <Num label="Corpo" value={selected.fontSize ?? 40} onChange={(v) => patchEl(selected.id, { fontSize: v })} />
                       <Select value={String(selected.fontWeight ?? 400)} onValueChange={(v) => patchEl(selected.id, { fontWeight: Number(v) })}>
@@ -529,12 +549,9 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                         </SelectTrigger>
                         <SelectContent>
                           {[
-                            [300, "Light"],
                             [400, "Regular"],
                             [500, "Medium"],
-                            [600, "Semibold"],
                             [700, "Bold"],
-                            [800, "Extrabold"],
                           ].map(([v, l]) => (
                             <SelectItem key={v} value={String(v)}>
                               {l}
@@ -567,8 +584,24 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                       </div>
                     </div>
                   </Section>
+                  <Section title="Spaziatura lettere">
+                    <p className="text-[11px] text-muted-foreground">{((selected.letterSpacing ?? 0) * 1000).toFixed(0)} (nel modello: titoli −51, nome −91)</p>
+                    <Slider min={-0.12} max={0.1} step={0.001} value={[selected.letterSpacing ?? 0]} onValueChange={([v]) => patchEl(selected.id, { letterSpacing: v }, false)} onValueCommit={() => patchEl(selected.id, {}, true)} />
+                  </Section>
                   <Section title="Colore">
-                    <ColorField value={selected.color ?? "#000000"} onChange={(v) => patchEl(selected.id, { color: v })} />
+                    <ColorField swatches={TEXT_SWATCHES} value={selected.color ?? "#000000"} onChange={(v) => patchEl(selected.id, { color: v })} />
+                    <label className="flex items-start gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5"
+                        checked={!!selected.accent}
+                        onChange={(e) => patchEl(selected.id, { accent: e.target.checked ? BIZ_GRADIENT : undefined })}
+                      />
+                      <span>
+                        Sfumatura sulle parole tra <code className="rounded bg-muted px-1">*asterischi*</code>
+                        <span className="block text-muted-foreground">Es. «Esempio per *Post Linkedin*»</span>
+                      </span>
+                    </label>
                   </Section>
                 </>
               )}
@@ -636,7 +669,27 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                 <p className="text-xs text-muted-foreground">Clicca un elemento per modificarlo</p>
               </div>
               <Section title="Sfondo">
-                <ColorField value={slide.background} onChange={(v) => patchSlide({ background: v })} />
+                <div className="grid grid-cols-3 gap-2">
+                  {[...BACKGROUNDS, { label: "Nessuno", src: null }].map((b) => (
+                    <button
+                      key={b.label}
+                      onClick={() => patchSlide({ backgroundSrc: b.src, backgroundImageId: null })}
+                      className={cn(
+                        "overflow-hidden rounded-md border text-[10px] text-muted-foreground",
+                        (slide.backgroundSrc ?? null) === b.src && !slide.backgroundImageId && "ring-2 ring-primary ring-offset-1",
+                      )}
+                    >
+                      {b.src ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={b.src} alt="" className="aspect-square w-full object-cover" />
+                      ) : (
+                        <div className="aspect-square w-full" style={{ background: slide.background }} />
+                      )}
+                      <span className="block py-1">{b.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <ColorField swatches={TEXT_SWATCHES} value={slide.background} onChange={(v) => patchSlide({ background: v })} />
                 {slide.backgroundImageId ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -670,7 +723,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        const fresh = makeSlide(t.key, design.format, slideIdx);
+                        const fresh = makeSlide(t.key, design.format);
                         patchSlide({ ...fresh, id: slide.id });
                       }}
                     >

@@ -116,3 +116,27 @@
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
+
+/* Inter "18pt" del modello Canva di Bizstudio (SIL OFL). Kerning e legature sono svuotati nei file:
+   Canva li spegne e l export PNG (html-to-image) ignora font-kerning, quindi il CSS da solo non basta. */
+@font-face {
+  font-family: "Inter 18pt";
+  src: url("/fonts/inter-18pt-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter 18pt";
+  src: url("/fonts/inter-18pt-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Inter 18pt";
+  src: url("/fonts/inter-18pt-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}

@@ -2,6 +2,12 @@
 
 Pannello locale per gestire i contenuti LinkedIn: idee grezze, post scritti, piano editoriale, banca immagini, editor di grafiche statiche e caroselli. Stile e struttura ricalcano la dashboard admin di Misha Travel.
 
+## Regole che l'app fa rispettare
+
+- **Ogni post ha un visual.** Senza immagine o grafica collegata il post porta il tag *Immagine mancante* ovunque: lista, calendario, dashboard, pagina del post.
+- **La prossima settimana deve essere pronta.** In *Da fare* e in dashboard: quanti post servono (obiettivo e giorni di uscita si impostano in *Ritmo di pubblicazione*), quali slot sono liberi, quali post sono incompleti.
+- **Da fare** unisce le cose generate dai contenuti (immagini mancanti, testi vuoti, slot liberi, post scaduti) e una lista manuale con la spunta.
+
 ## Avvio
 
 Doppio clic su `Avvia La banca Linked.command`, oppure:

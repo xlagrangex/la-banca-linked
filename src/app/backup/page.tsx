@@ -10,7 +10,7 @@ import { reloadAll } from "@/lib/client-store";
 import { fmtDate } from "@/lib/labels";
 
 type TrashEntry = { collection: string; deletedAt: string; item: { id: string; title?: string; name?: string; body?: string } };
-const COLL: Record<string, string> = { ideas: "Idea", posts: "Contenuto", images: "Immagine", designs: "Grafica" };
+const COLL: Record<string, string> = { ideas: "Idea", posts: "Contenuto", images: "Immagine", designs: "Grafica", todos: "Da fare" };
 
 export default function BackupPage() {
   const [info, setInfo] = useState<{ dataDir: string; backups: { day: string; files: string[] }[] } | null>(null);
@@ -98,7 +98,7 @@ export default function BackupPage() {
                 {trash.slice(0, 50).map((t) => (
                   <li key={`${t.item.id}-${t.deletedAt}`} className="flex items-center gap-3 py-2.5">
                     <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{COLL[t.collection] ?? t.collection}</span>
-                    <p className="min-w-0 flex-1 truncate text-sm">{t.item.title || t.item.name || t.item.body?.slice(0, 60) || "Senza titolo"}</p>
+                    <p className="min-w-0 flex-1 truncate text-sm">{t.item.title || t.item.name || (t.item as { text?: string }).text || t.item.body?.slice(0, 60) || "Senza titolo"}</p>
                     <span className="text-xs text-muted-foreground">{fmtDate(t.deletedAt, "d MMM HH:mm")}</span>
                     <Button size="sm" variant="outline" onClick={() => restore(t.item.id)}>
                       <RotateCcw className="h-3.5 w-3.5" /> Ripristina

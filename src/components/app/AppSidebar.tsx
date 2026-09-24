@@ -10,21 +10,25 @@ import {
   CalendarDays,
   Palette,
   HardDrive,
+  ListTodo,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/lib/client-store";
+import { buildAutoTasks } from "@/lib/tasks";
+import { useSettings } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Logo from "./Logo";
 
-type NavLink = { label: string; href: string; icon: React.ElementType; badge?: "ideas" | "ready" };
+type NavLink = { label: string; href: string; icon: React.ElementType; badge?: "ideas" | "ready" | "todo" };
 type NavItem = NavLink | { separator: string };
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { label: "Da fare", href: "/da-fare", icon: ListTodo, badge: "todo" },
   { separator: "Banca" },
   { label: "Idee grezze", href: "/idee", icon: Lightbulb, badge: "ideas" },
   { label: "Contenuti", href: "/contenuti", icon: FileText, badge: "ready" },
@@ -46,6 +50,10 @@ export default function AppSidebar({ collapsed, onToggle, onNavigate }: Props) {
   const pathname = usePathname();
   const ideasCount = useStore((s) => s.ideas.filter((i) => i.status === "grezza").length);
   const readyCount = useStore((s) => s.posts.filter((p) => p.status === "pronto").length);
+  const posts = useStore((s) => s.posts);
+  const openTodos = useStore((s) => s.todos.filter((t) => !t.done).length);
+  const settings = useSettings();
+  const todoCount = buildAutoTasks(posts, settings).length + openTodos;
 
   return (
     <aside
@@ -76,7 +84,7 @@ export default function AppSidebar({ collapsed, onToggle, onNavigate }: Props) {
 
             const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             const Icon = item.icon;
-            const badgeCount = item.badge === "ideas" ? ideasCount : item.badge === "ready" ? readyCount : 0;
+            const badgeCount = item.badge === "ideas" ? ideasCount : item.badge === "ready" ? readyCount : item.badge === "todo" ? todoCount : 0;
 
             const linkContent = (
               <Link
@@ -93,14 +101,19 @@ export default function AppSidebar({ collapsed, onToggle, onNavigate }: Props) {
                 <span className="relative shrink-0">
                   <Icon className="h-5 w-5" />
                   {collapsed && badgeCount > 0 && (
-                    <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary" />
+                    <span className={cn("absolute -right-1 -top-1 h-2 w-2 rounded-full", item.badge === "todo" ? "bg-red-500" : "bg-primary")} />
                   )}
                 </span>
                 {!collapsed && (
                   <>
                     <span className="flex-1">{item.label}</span>
                     {badgeCount > 0 && (
-                      <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-none text-white">
+                      <span
+                        className={cn(
+                          "ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold leading-none text-white",
+                          item.badge === "todo" ? "bg-red-500" : "bg-primary",
+                        )}
+                      >
                         {badgeCount > 99 ? "99+" : badgeCount}
                       </span>
                     )}

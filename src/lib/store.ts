@@ -157,6 +157,6 @@ export async function listBackups() {
 
 export async function snapshotAll() {
   const result: Record<string, unknown> = { exportedAt: new Date().toISOString() };
-  for (const name of ["ideas", "posts", "images", "designs"] as CollectionName[]) result[name] = await list(name);
+  for (const name of ["ideas", "posts", "images", "designs", "todos", "settings"] as CollectionName[]) result[name] = await list(name);
   return result;
 }

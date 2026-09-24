@@ -19,6 +19,8 @@ let state: State = {
   posts: [],
   images: [],
   designs: [],
+  todos: [],
+  settings: [],
   loaded: false,
   pending: 0,
   dirty: 0,
@@ -66,7 +68,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 let loading: Promise<void> | null = null;
 export function loadAll() {
   loading ??= (async () => {
-    const names: CollectionName[] = ["ideas", "posts", "images", "designs"];
+    const names: CollectionName[] = ["ideas", "posts", "images", "designs", "todos", "settings"];
     const results = await Promise.all(names.map((n) => fetch(`/api/db/${n}`).then((r) => r.json())));
     const patch: Partial<State> = { loaded: true };
     names.forEach((n, i) => ((patch as Record<string, unknown>)[n] = results[i]));

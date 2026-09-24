@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useStore } from "@/lib/client-store";
 
 const TITLES: [string, string][] = [
+  ["/da-fare", "Cose da fare"],
   ["/idee", "Banca idee grezze"],
   ["/contenuti", "Banca contenuti"],
   ["/immagini", "Banca immagini"],

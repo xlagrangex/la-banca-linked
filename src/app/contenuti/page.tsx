@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FileText, Plus, Search, Pencil, Trash2, Copy, Image as ImageIcon, Layers } from "lucide-react";
+import { FileText, Plus, Search, Pencil, Trash2, Copy, Image as ImageIcon, Layers, ImageOff } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,11 @@ import { createItem, deleteItem, imageUrl, useStore } from "@/lib/client-store";
 import { emptyPost, withoutMeta } from "@/lib/factories";
 import { fmtDate, pillarColor, POST_FORMAT, POST_STATUS } from "@/lib/labels";
 import type { PostStatus } from "@/lib/types";
+import { hasVisual } from "@/lib/readiness";
+import IssueBadges from "@/components/app/IssueBadges";
 import { cn } from "@/lib/utils";
 
-const TABS: (PostStatus | "tutti")[] = ["tutti", "bozza", "pronto", "programmato", "pubblicato"];
+const TABS: (PostStatus | "tutti" | "senza-immagine")[] = ["tutti", "bozza", "pronto", "programmato", "pubblicato", "senza-immagine"];
 
 export default function ContenutiPage() {
   const router = useRouter();
@@ -27,7 +29,8 @@ export default function ContenutiPage() {
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     return posts.filter(
-      (p) => (tab === "tutti" || p.status === tab) && (!s || `${p.title} ${p.body} ${p.pillar}`.toLowerCase().includes(s)),
+      (p) =>
+        (tab === "tutti" || p.status === tab || (tab === "senza-immagine" && p.status !== "pubblicato" && !hasVisual(p))) && (!s || `${p.title} ${p.body} ${p.pillar}`.toLowerCase().includes(s)),
     );
   }, [posts, q, tab]);
 
@@ -54,7 +57,12 @@ export default function ContenutiPage() {
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex rounded-lg border bg-white p-1">
           {TABS.map((t) => {
-            const count = t === "tutti" ? posts.length : posts.filter((p) => p.status === t).length;
+            const count =
+              t === "tutti"
+                ? posts.length
+                : t === "senza-immagine"
+                  ? posts.filter((p) => p.status !== "pubblicato" && !hasVisual(p)).length
+                  : posts.filter((p) => p.status === t).length;
             return (
               <button
                 key={t}
@@ -64,7 +72,15 @@ export default function ContenutiPage() {
                   tab === t ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                {t === "tutti" ? "Tutti" : POST_STATUS[t].label}
+                {t === "senza-immagine" ? (
+                  <span className={cn("inline-flex items-center gap-1", tab !== t && count > 0 && "text-red-600")}>
+                    <ImageOff className="h-3.5 w-3.5" /> Senza immagine
+                  </span>
+                ) : t === "tutti" ? (
+                  "Tutti"
+                ) : (
+                  POST_STATUS[t].label
+                )}
                 <span className="ml-1.5 text-xs opacity-70">{count}</span>
               </button>
             );
@@ -136,9 +152,12 @@ export default function ContenutiPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", POST_STATUS[p.status].color)}>
-                        {POST_STATUS[p.status].label}
-                      </span>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", POST_STATUS[p.status].color)}>
+                          {POST_STATUS[p.status].label}
+                        </span>
+                        <IssueBadges post={p} only={["immagine", "testo"]} />
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {fmtDate(p.status === "pubblicato" ? p.publishedAt : p.scheduledFor)}

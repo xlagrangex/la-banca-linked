@@ -17,7 +17,9 @@ import {
   subMonths,
 } from "date-fns";
 import { it } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Plus, GripVertical, Inbox } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, GripVertical, Inbox, ImageOff } from "lucide-react";
+import { hasVisual, isoWeekday } from "@/lib/readiness";
+import { useSettings } from "@/lib/settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/app/PageHeader";
@@ -42,11 +44,15 @@ function Chip({ post, compact = false }: { post: Post; compact?: boolean }) {
       className={cn(
         "group flex items-center gap-1.5 rounded-md border bg-white px-2 py-1.5 text-xs shadow-sm transition-shadow hover:shadow",
         post.status === "pubblicato" && "opacity-70",
+        post.status !== "pubblicato" && !hasVisual(post) && "border-red-200 bg-red-50/50",
       )}
     >
       <span className={cn("h-2 w-2 shrink-0 rounded-full", POST_STATUS[post.status].dot)} />
       {!compact && time && <span className="shrink-0 font-medium text-muted-foreground">{time}</span>}
       <span className="truncate font-medium">{post.title || post.body.slice(0, 40) || "Senza titolo"}</span>
+      {post.status !== "pubblicato" && !hasVisual(post) && (
+        <ImageOff className="ml-auto h-3.5 w-3.5 shrink-0 text-red-500" aria-label="Immagine mancante" />
+      )}
     </Link>
   );
 }
@@ -56,6 +62,8 @@ export default function PianoPage() {
   const posts = useStore((s) => s.posts);
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
   const [over, setOver] = useState<string | null>(null);
+  const { postingTime, postingDays } = useSettings();
+  const todayKey = format(new Date(), "yyyy-MM-dd");
 
   const days = useMemo(
     () =>
@@ -87,7 +95,7 @@ export default function PianoPage() {
       updateItem("posts", id, { scheduledFor: null, status: post.status === "programmato" ? "pronto" : post.status });
       return;
     }
-    const time = post.scheduledFor?.slice(11, 16) || "09:00";
+    const time = post.scheduledFor?.slice(11, 16) || postingTime;
     updateItem("posts", id, {
       scheduledFor: `${dayKey}T${time}`,
       status: post.status === "bozza" || post.status === "pronto" ? "programmato" : post.status,
@@ -95,7 +103,7 @@ export default function PianoPage() {
   };
 
   const addOn = async (dayKey: string) => {
-    const p = await createItem("posts", emptyPost({ scheduledFor: `${dayKey}T09:00`, status: "programmato" }));
+    const p = await createItem("posts", emptyPost({ scheduledFor: `${dayKey}T${postingTime}` }));
     router.push(`/contenuti/${p.id}`);
   };
 
@@ -180,6 +188,14 @@ export default function PianoPage() {
                     {items.map((p) => (
                       <Chip key={p.id} post={p} />
                     ))}
+                    {items.length === 0 && key >= todayKey && isSameMonth(day, month) && postingDays.includes(isoWeekday(day)) && (
+                      <button
+                        onClick={() => addOn(key)}
+                        className="w-full rounded-md border border-dashed border-primary/30 py-1.5 text-[11px] font-medium text-primary/70 hover:bg-primary/5 hover:text-primary"
+                      >
+                        Slot libero
+                      </button>
+                    )}
                   </div>
                 </div>
               );

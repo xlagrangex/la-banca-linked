@@ -17,6 +17,7 @@ import {
   Repeat2,
   Send,
   ExternalLink,
+  ImageOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +35,8 @@ import { newDesign } from "@/lib/design-templates";
 import { LINKEDIN_FOLD, LINKEDIN_MAX, POST_FORMAT, POST_STATUS } from "@/lib/labels";
 import type { Post, PostFormat, PostStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import IssueBadges from "@/components/app/IssueBadges";
+import { hasVisual } from "@/lib/readiness";
 
 export default function PostEditor({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -67,6 +70,8 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
     const patch: Partial<Post> = { status };
     if (status === "pubblicato" && !post.publishedAt) patch.publishedAt = post.scheduledFor ?? new Date().toISOString().slice(0, 16);
     set(patch);
+    if ((status === "pronto" || status === "programmato") && !hasVisual(post))
+      toast.warning("Manca ancora l'immagine", { description: "Resta segnalato in Da fare finché non ne assegni una." });
     if (status === "pubblicato" && post.ideaId) updateItem("ideas", post.ideaId, { status: "usata" });
   };
 
@@ -95,7 +100,10 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
           </Button>
           <div>
             <h1 className="font-heading text-2xl font-bold text-secondary">{post.title || "Nuovo contenuto"}</h1>
-            <p className="text-sm text-muted-foreground">Ogni modifica si salva da sola, in locale.</p>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <IssueBadges post={post} />
+              <p className="text-sm text-muted-foreground">Ogni modifica si salva da sola, in locale.</p>
+            </div>
           </div>
         </div>
         <div className="flex gap-2">
@@ -282,6 +290,14 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
               <CardTitle className="font-heading text-base">Visual</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {!hasVisual(post) && post.status !== "pubblicato" && (
+                <div className="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700 ring-1 ring-inset ring-red-200">
+                  <ImageOff className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    <strong>Immagine mancante.</strong> Ogni post esce con un visual: scegline una dalla banca o crea una grafica.
+                  </span>
+                </div>
+              )}
               {design ? (
                 <div className="flex items-center gap-3 rounded-lg border p-2">
                   <div className="overflow-hidden rounded-md border">

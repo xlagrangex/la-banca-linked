@@ -85,12 +85,33 @@ export interface Design {
   updatedAt: string;
 }
 
+export interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+  dueDate: string | null;
+  postId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Settings {
+  id: string;
+  postsPerWeek: number;
+  postingDays: number[];
+  postingTime: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CollectionMap {
   ideas: Idea;
   posts: Post;
   images: ImageAsset;
   designs: Design;
+  todos: Todo;
+  settings: Settings;
 }
 
 export type CollectionName = keyof CollectionMap;
-export const COLLECTIONS: CollectionName[] = ["ideas", "posts", "images", "designs"];
+export const COLLECTIONS: CollectionName[] = ["ideas", "posts", "images", "designs", "todos", "settings"];

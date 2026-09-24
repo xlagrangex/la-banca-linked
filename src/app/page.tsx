@@ -15,6 +15,7 @@ import {
   Plus,
   CalendarDays,
   ArrowRight,
+  ImageOff,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,8 @@ import { createItem, useStore } from "@/lib/client-store";
 import { fmtDate, IDEA_STATUS, pillarColor, POST_STATUS } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 import { emptyPost } from "@/lib/factories";
+import { hasVisual } from "@/lib/readiness";
+import WeekReadiness from "@/components/app/WeekReadiness";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -48,7 +51,7 @@ export default function Dashboard() {
     { label: "Pubblicati", value: posts.filter((p) => p.status === "pubblicato").length, icon: Send, color: "text-emerald-600", href: "/contenuti" },
     { label: "Immagini in banca", value: images.length, icon: ImageIcon, color: "text-cyan-600", href: "/immagini" },
     { label: "Grafiche e caroselli", value: designs.length, icon: Palette, color: "text-rose-600", href: "/editor" },
-    { label: "Idee totali", value: ideas.length, icon: Lightbulb, color: "text-indigo-600", href: "/idee" },
+    { label: "Immagini mancanti", value: posts.filter((p) => p.status !== "pubblicato" && !hasVisual(p)).length, icon: ImageOff, color: "text-red-600", href: "/da-fare" },
   ];
 
   const addIdea = async (e: React.FormEvent) => {
@@ -98,6 +101,8 @@ export default function Dashboard() {
           </form>
         </CardContent>
       </Card>
+
+      <WeekReadiness offset={1} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (

@@ -1,6 +1,8 @@
 import { addDays, format, startOfDay, startOfWeek } from "date-fns";
 import type { Post, Settings } from "./types";
 
+export const MIN_POSTS_PER_WEEK = 3;
+
 export const DEFAULT_SETTINGS: Omit<Settings, "id" | "createdAt" | "updatedAt"> = {
   postsPerWeek: 3,
   postingDays: [1, 3, 5],
@@ -51,7 +53,7 @@ export function weekReport(posts: Post[], settings: Pick<Settings, "postsPerWeek
   const ready = planned.filter(isReady);
   const plannedDays = new Set(planned.map((p) => p.scheduledFor!.slice(0, 10)));
   const freeSlots = range.days.filter((d) => settings.postingDays.includes(isoWeekday(d)) && !plannedDays.has(format(d, "yyyy-MM-dd")));
-  const missing = Math.max(0, settings.postsPerWeek - planned.length);
+  const missing = Math.max(0, Math.max(MIN_POSTS_PER_WEEK, settings.postsPerWeek) - planned.length);
   return {
     ...range,
     planned,

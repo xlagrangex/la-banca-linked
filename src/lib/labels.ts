@@ -1,6 +1,6 @@
 import { format, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
-import type { IdeaStatus, PostFormat, PostStatus } from "./types";
+import type { Funnel, IdeaStatus, PostStatus, VisualType } from "./types";
 
 export const PILLARS = [
   "Siti & e-commerce visti da dentro",
@@ -33,10 +33,19 @@ export const POST_STATUS: Record<PostStatus, { label: string; color: string; dot
   pubblicato: { label: "Pubblicato", color: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" },
 };
 
-export const POST_FORMAT: Record<PostFormat, string> = {
-  testo: "Solo testo",
-  immagine: "Immagine",
-  carosello: "Carosello",
+export const FUNNEL: Record<Funnel, { label: string; hint: string; color: string }> = {
+  tofu: { label: "TOFU", hint: "Top of funnel", color: "bg-sky-100 text-sky-800 ring-sky-200" },
+  mofu: { label: "MOFU", hint: "Middle of funnel", color: "bg-amber-100 text-amber-800 ring-amber-200" },
+  bofu: { label: "BOFU", hint: "Bottom of funnel", color: "bg-emerald-100 text-emerald-800 ring-emerald-200" },
+};
+
+// Il tipo di immagine è indipendente dal tipo di post.
+export const VISUAL_TYPE: Record<VisualType, { label: string; needsDesign: boolean }> = {
+  selfie: { label: "Selfie", needsDesign: false },
+  screen: { label: "Screen", needsDesign: false },
+  "foto-pc": { label: "Foto del PC con schermata", needsDesign: false },
+  statica: { label: "Immagine statica", needsDesign: true },
+  carosello: { label: "Carosello", needsDesign: true },
 };
 
 export const fmtDate = (iso: string | null | undefined, pattern = "d MMM yyyy") =>

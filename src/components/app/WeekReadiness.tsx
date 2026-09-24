@@ -1,62 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { format, isToday, parseISO } from "date-fns";
+import { format, isToday } from "date-fns";
 import { it } from "date-fns/locale";
 import { CheckCircle2, AlertTriangle, Plus, ImageOff, FileWarning, CircleDashed } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { createItem, updateItem, useStore } from "@/lib/client-store";
-import { emptyPost } from "@/lib/factories";
-import { isoWeekday, postIssues, weekReport } from "@/lib/readiness";
+import { useStore } from "@/lib/client-store";
+import SlotMenu from "./SlotMenu";
+import { isoWeekday, MIN_POSTS_PER_WEEK, postIssues, weekReport } from "@/lib/readiness";
 import { useSettings } from "@/lib/settings";
 import type { Post } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const ISSUE_ICON = { immagine: ImageOff, testo: FileWarning, stato: CircleDashed } as const;
-
-function SlotMenu({ dayKey, children }: { dayKey: string; children: React.ReactNode }) {
-  const router = useRouter();
-  const settings = useSettings();
-  const backlog = useStore((s) => s.posts).filter((p) => !p.scheduledFor && p.status !== "pubblicato");
-  const at = `${dayKey}T${settings.postingTime}`;
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
-      <DropdownMenuContent className="w-72">
-        <DropdownMenuLabel>{format(parseISO(dayKey), "EEEE d MMMM", { locale: it })}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {backlog.slice(0, 8).map((p) => (
-          <DropdownMenuItem
-            key={p.id}
-            onClick={() => updateItem("posts", p.id, { scheduledFor: at, status: p.status === "bozza" ? "bozza" : "programmato" })}
-          >
-            <span className="truncate">{p.title || p.body.slice(0, 40) || "Senza titolo"}</span>
-            {postIssues(p).includes("immagine") && <ImageOff className="ml-auto h-3.5 w-3.5 text-red-500" />}
-          </DropdownMenuItem>
-        ))}
-        {backlog.length > 0 && <DropdownMenuSeparator />}
-        <DropdownMenuItem
-          onClick={async () => {
-            const p = await createItem("posts", emptyPost({ scheduledFor: at }));
-            router.push(`/contenuti/${p.id}`);
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Nuovo contenuto per questo giorno
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
 
 function DayPost({ post }: { post: Post }) {
   const issues = postIssues(post);
@@ -90,6 +46,7 @@ export default function WeekReadiness({ offset = 1, compact = false }: { offset?
   const posts = useStore((s) => s.posts);
   const settings = useSettings();
   const rep = weekReport(posts, settings, offset);
+  const target = Math.max(MIN_POSTS_PER_WEEK, settings.postsPerWeek);
   const notReady = rep.planned.length - rep.ready.length;
   const label = offset === 0 ? "Questa settimana" : offset === 1 ? "Prossima settimana" : `Tra ${offset} settimane`;
 
@@ -99,7 +56,7 @@ export default function WeekReadiness({ offset = 1, compact = false }: { offset?
         <div>
           <CardTitle className="font-heading text-lg">{label}</CardTitle>
           <p className="text-sm text-muted-foreground">
-            {format(rep.start, "d MMM", { locale: it })} – {format(rep.end, "d MMM", { locale: it })} · obiettivo {settings.postsPerWeek} post
+            {format(rep.start, "d MMM", { locale: it })} – {format(rep.end, "d MMM", { locale: it })} · almeno {target} post
           </p>
         </div>
         {rep.complete ? (
@@ -122,12 +79,12 @@ export default function WeekReadiness({ offset = 1, compact = false }: { offset?
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>
-              {rep.ready.length} pronti su {Math.max(settings.postsPerWeek, rep.planned.length)}
+              {rep.ready.length} pronti su {Math.max(target, rep.planned.length)}
             </span>
             <span>{rep.planned.length} programmati</span>
           </div>
           <div className="flex h-2 gap-1">
-            {Array.from({ length: Math.max(settings.postsPerWeek, rep.planned.length) }, (_, i) => (
+            {Array.from({ length: Math.max(target, rep.planned.length) }, (_, i) => (
               <div
                 key={i}
                 className={cn(

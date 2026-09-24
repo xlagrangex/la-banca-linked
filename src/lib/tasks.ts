@@ -1,5 +1,6 @@
 import { format, startOfDay } from "date-fns";
 import { postIssues, weekReport, type Issue } from "./readiness";
+import { VISUAL_TYPE } from "./labels";
 import type { Post, Settings } from "./types";
 
 export type AutoTask = {
@@ -26,7 +27,8 @@ export function buildAutoTasks(posts: Post[], settings: Pick<Settings, "postsPer
       continue;
     }
     for (const issue of postIssues(p)) {
-      const verb = issue === "immagine" ? "Assegna l'immagine a" : issue === "testo" ? "Scrivi il testo di" : "Rileggi e segna come pronto";
+      const visual = p.visualType ? ` (${VISUAL_TYPE[p.visualType].label.toLowerCase()})` : "";
+      const verb = issue === "immagine" ? `Assegna l'immagine${visual} a` : issue === "testo" ? "Scrivi il testo di" : "Rileggi e segna come pronto";
       out.push({ key: `${p.id}:${issue}`, kind: issue, text: `${verb} ${title(p)}`, date: day, postId: p.id });
     }
   }

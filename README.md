@@ -5,8 +5,14 @@ Pannello locale per gestire i contenuti LinkedIn: idee grezze, post scritti, pia
 ## Regole che l'app fa rispettare
 
 - **Ogni post ha un visual.** Senza immagine o grafica collegata il post porta il tag *Immagine mancante* ovunque: lista, calendario, dashboard, pagina del post.
-- **La prossima settimana deve essere pronta.** In *Da fare* e in dashboard: quanti post servono (obiettivo e giorni di uscita si impostano in *Ritmo di pubblicazione*), quali slot sono liberi, quali post sono incompleti.
+- **Almeno 3 post a settimana, e la prossima settimana deve essere pronta.** La dashboard apre con le schede dei post della settimana successiva e gli slot ancora liberi. In *Da fare* e in dashboard: quanti post servono (obiettivo e giorni di uscita si impostano in *Ritmo di pubblicazione*), quali slot sono liberi, quali post sono incompleti.
 - **Da fare** unisce le cose generate dai contenuti (immagini mancanti, testi vuoti, slot liberi, post scaduti) e una lista manuale con la spunta.
+
+## Tag del post
+
+- **Funnel**: TOFU / MOFU / BOFU.
+- **Tipo di immagine** (indipendente dal tipo di post): selfie, screen, foto del PC con schermata, immagine statica, carosello.
+- Tipologie di post: da definire.
 
 ## Avvio
 

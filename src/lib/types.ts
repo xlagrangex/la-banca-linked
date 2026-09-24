@@ -12,14 +12,16 @@ export interface Idea {
 }
 
 export type PostStatus = "bozza" | "pronto" | "programmato" | "pubblicato";
-export type PostFormat = "testo" | "immagine" | "carosello";
+export type Funnel = "tofu" | "mofu" | "bofu";
+export type VisualType = "selfie" | "screen" | "foto-pc" | "statica" | "carosello";
 
 export interface Post {
   id: string;
   title: string;
   body: string;
   pillar: string;
-  format: PostFormat;
+  funnel: Funnel | null;
+  visualType: VisualType | null;
   status: PostStatus;
   scheduledFor: string | null;
   publishedAt: string | null;

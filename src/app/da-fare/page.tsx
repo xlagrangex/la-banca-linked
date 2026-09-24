@@ -27,6 +27,7 @@ import { createItem, deleteItem, updateItem, useStore } from "@/lib/client-store
 import { buildAutoTasks, type AutoTask } from "@/lib/tasks";
 import { saveSettings, useSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import { MIN_POSTS_PER_WEEK } from "@/lib/readiness";
 
 const KIND: Record<AutoTask["kind"], { icon: React.ElementType; cls: string }> = {
   immagine: { icon: ImageOff, cls: "bg-red-50 text-red-600" },
@@ -82,13 +83,13 @@ export default function DaFarePage() {
         <Card className="py-4">
           <CardContent className="flex flex-wrap items-center gap-x-8 gap-y-4 px-5">
             <label className="flex items-center gap-2 text-sm">
-              Post a settimana
+              Post a settimana (minimo {MIN_POSTS_PER_WEEK})
               <Input
                 type="number"
-                min={1}
+                min={MIN_POSTS_PER_WEEK}
                 max={14}
                 value={settings.postsPerWeek}
-                onChange={(e) => saveSettings({ postsPerWeek: Math.max(1, Number(e.target.value) || 1) }, savedSettings)}
+                onChange={(e) => saveSettings({ postsPerWeek: Math.max(MIN_POSTS_PER_WEEK, Number(e.target.value) || MIN_POSTS_PER_WEEK) }, savedSettings)}
                 className="h-9 w-20"
               />
             </label>

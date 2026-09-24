@@ -32,10 +32,11 @@ import ImagePicker from "@/components/app/ImagePicker";
 import SlideView from "@/components/design/SlideView";
 import { createItem, deleteItem, imageUrl, updateItem, useStore } from "@/lib/client-store";
 import { newDesign } from "@/lib/design-templates";
-import { LINKEDIN_FOLD, LINKEDIN_MAX, POST_FORMAT, POST_STATUS } from "@/lib/labels";
-import type { Post, PostFormat, PostStatus } from "@/lib/types";
+import { FUNNEL, LINKEDIN_FOLD, LINKEDIN_MAX, POST_STATUS, VISUAL_TYPE } from "@/lib/labels";
+import type { Funnel, Post, PostStatus, VisualType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import IssueBadges from "@/components/app/IssueBadges";
+import FunnelBadge from "@/components/app/FunnelBadge";
 import { hasVisual } from "@/lib/readiness";
 
 export default function PostEditor({ params }: { params: Promise<{ id: string }> }) {
@@ -76,9 +77,9 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
   };
 
   const createDesign = async () => {
-    const kind = post.format === "carosello" ? "carosello" : "statica";
+    const kind = post.visualType === "carosello" ? "carosello" : "statica";
     const d = await createItem("designs", newDesign(kind, "portrait", post.title || "Grafica post"));
-    await set({ designId: d.id, format: post.format === "testo" ? "immagine" : post.format });
+    await set({ designId: d.id, visualType: post.visualType && VISUAL_TYPE[post.visualType].needsDesign ? post.visualType : kind });
     router.push(`/editor/${d.id}`);
   };
 
@@ -101,6 +102,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
           <div>
             <h1 className="font-heading text-2xl font-bold text-secondary">{post.title || "Nuovo contenuto"}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-2">
+              <FunnelBadge funnel={post.funnel} />
               <IssueBadges post={post} />
               <p className="text-sm text-muted-foreground">Ogni modifica si salva da sola, in locale.</p>
             </div>
@@ -238,19 +240,38 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Formato</Label>
-                  <Select value={post.format} onValueChange={(v) => set({ format: v as PostFormat })}>
+                  <Label>Tipo di immagine</Label>
+                  <Select value={post.visualType ?? "_none"} onValueChange={(v) => set({ visualType: v === "_none" ? null : (v as VisualType) })}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(POST_FORMAT) as PostFormat[]).map((f) => (
+                      <SelectItem value="_none">Da scegliere</SelectItem>
+                      {(Object.keys(VISUAL_TYPE) as VisualType[]).map((f) => (
                         <SelectItem key={f} value={f}>
-                          {POST_FORMAT[f]}
+                          {VISUAL_TYPE[f].label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Funnel</Label>
+                <div className="grid grid-cols-3 gap-1 rounded-lg border p-1">
+                  {(Object.keys(FUNNEL) as Funnel[]).map((f) => (
+                    <button
+                      key={f}
+                      title={FUNNEL[f].hint}
+                      onClick={() => set({ funnel: post.funnel === f ? null : f })}
+                      className={cn(
+                        "rounded-md py-1.5 text-xs font-bold tracking-wide transition-colors",
+                        post.funnel === f ? cn(FUNNEL[f].color, "ring-1 ring-inset") : "text-muted-foreground hover:bg-muted",
+                      )}
+                    >
+                      {FUNNEL[f].label}
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="space-y-2">
@@ -294,7 +315,10 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
                 <div className="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700 ring-1 ring-inset ring-red-200">
                   <ImageOff className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>
-                    <strong>Immagine mancante.</strong> Ogni post esce con un visual: scegline una dalla banca o crea una grafica.
+                    <strong>Immagine mancante{post.visualType ? ` · ${VISUAL_TYPE[post.visualType].label.toLowerCase()}` : ""}.</strong>{" "}
+                    {post.visualType && !VISUAL_TYPE[post.visualType].needsDesign
+                      ? "Carica la foto o lo screen qui sotto, o sceglila dalla banca."
+                      : "Ogni post esce con un visual: crea la grafica o scegline una dalla banca."}
                   </span>
                 </div>
               )}
@@ -317,8 +341,13 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
                   </Button>
                 </div>
               ) : (
-                <Button variant="outline" className="w-full" onClick={createDesign}>
-                  <Palette className="h-4 w-4" /> Crea grafica o carosello per questo post
+                <Button
+                  variant={post.visualType && !VISUAL_TYPE[post.visualType].needsDesign ? "outline" : "default"}
+                  className="w-full"
+                  onClick={createDesign}
+                >
+                  <Palette className="h-4 w-4" />
+                  {post.visualType === "carosello" ? "Crea il carosello" : post.visualType === "statica" ? "Crea l'immagine statica" : "Crea una grafica per questo post"}
                 </Button>
               )}
 

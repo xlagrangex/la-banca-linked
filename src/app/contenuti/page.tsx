@@ -11,8 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import PageHeader, { EmptyState } from "@/components/app/PageHeader";
 import { createItem, deleteItem, imageUrl, useStore } from "@/lib/client-store";
 import { emptyPost, withoutMeta } from "@/lib/factories";
-import { fmtDate, pillarColor, POST_FORMAT, POST_STATUS } from "@/lib/labels";
-import type { PostStatus } from "@/lib/types";
+import { fmtDate, FUNNEL, pillarColor, POST_STATUS, VISUAL_TYPE } from "@/lib/labels";
+import FunnelBadge from "@/components/app/FunnelBadge";
+import type { Funnel, PostStatus } from "@/lib/types";
 import { hasVisual } from "@/lib/readiness";
 import IssueBadges from "@/components/app/IssueBadges";
 import { cn } from "@/lib/utils";
@@ -25,14 +26,16 @@ export default function ContenutiPage() {
   const images = useStore((s) => s.images);
   const [q, setQ] = useState("");
   const [tab, setTab] = useState<(typeof TABS)[number]>("tutti");
+  const [funnel, setFunnel] = useState<Funnel | "tutti">("tutti");
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     return posts.filter(
       (p) =>
-        (tab === "tutti" || p.status === tab || (tab === "senza-immagine" && p.status !== "pubblicato" && !hasVisual(p))) && (!s || `${p.title} ${p.body} ${p.pillar}`.toLowerCase().includes(s)),
+        (tab === "tutti" || p.status === tab || (tab === "senza-immagine" && p.status !== "pubblicato" && !hasVisual(p))) &&
+        (funnel === "tutti" || p.funnel === funnel) && (!s || `${p.title} ${p.body} ${p.pillar}`.toLowerCase().includes(s)),
     );
-  }, [posts, q, tab]);
+  }, [posts, q, tab, funnel]);
 
   const newPost = async () => {
     const p = await createItem("posts", emptyPost());
@@ -86,6 +89,20 @@ export default function ContenutiPage() {
             );
           })}
         </div>
+        <div className="flex rounded-lg border bg-white p-1">
+          {(["tutti", "tofu", "mofu", "bofu"] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFunnel(f)}
+              className={cn(
+                "rounded-md px-2.5 py-1.5 text-xs font-bold tracking-wide transition-colors",
+                funnel === f ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {f === "tutti" ? "Tutto il funnel" : FUNNEL[f].label}
+            </button>
+          ))}
+        </div>
         <div className="relative ml-auto w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cerca per titolo, testo o pilastro…" className="bg-white pl-9" />
@@ -128,18 +145,19 @@ export default function ContenutiPage() {
                         {cover ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={imageUrl(cover)} alt="" className="h-full w-full object-cover" />
-                        ) : p.format === "carosello" ? (
+                        ) : p.visualType === "carosello" ? (
                           <Layers className="h-5 w-5 text-muted-foreground/50" />
-                        ) : p.format === "immagine" ? (
-                          <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
                         ) : (
-                          <FileText className="h-5 w-5 text-muted-foreground/50" />
+                          <ImageIcon className="h-5 w-5 text-muted-foreground/50" />
                         )}
                       </div>
                     </TableCell>
                     <TableCell className="max-w-[240px]">
                       <p className="truncate font-medium">{p.title || "Senza titolo"}</p>
-                      <p className="text-xs text-muted-foreground">{POST_FORMAT[p.format]}</p>
+                      <div className="mt-0.5 flex items-center gap-1.5">
+                        <FunnelBadge funnel={p.funnel} />
+                        <span className="text-xs text-muted-foreground">{p.visualType ? VISUAL_TYPE[p.visualType].label : "Immagine da scegliere"}</span>
+                      </div>
                     </TableCell>
                     <TableCell className="max-w-[320px]">
                       <p className="truncate text-sm text-muted-foreground">{p.body.replace(/\s+/g, " ") || "—"}</p>

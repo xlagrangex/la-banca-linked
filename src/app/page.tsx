@@ -25,7 +25,7 @@ import { fmtDate, IDEA_STATUS, pillarColor, POST_STATUS } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 import { emptyPost } from "@/lib/factories";
 import { hasVisual } from "@/lib/readiness";
-import WeekReadiness from "@/components/app/WeekReadiness";
+import NextWeekHero from "@/components/app/NextWeekHero";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -77,6 +77,8 @@ export default function Dashboard() {
         <p className="text-sm text-muted-foreground">Panoramica generale della banca contenuti LinkedIn</p>
       </div>
 
+      <NextWeekHero />
+
       <Card className="border-primary/20 bg-gradient-to-r from-primary/[0.06] to-transparent py-5">
         <CardContent className="px-5">
           <form onSubmit={addIdea} className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -101,8 +103,6 @@ export default function Dashboard() {
           </form>
         </CardContent>
       </Card>
-
-      <WeekReadiness offset={1} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (

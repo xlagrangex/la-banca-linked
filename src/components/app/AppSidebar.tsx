@@ -11,6 +11,7 @@ import {
   Palette,
   HardDrive,
   ListTodo,
+  Sparkles,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -30,6 +31,7 @@ const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Da fare", href: "/da-fare", icon: ListTodo, badge: "todo" },
   { separator: "Banca" },
+  { label: "Sessioni", href: "/sessioni", icon: Sparkles },
   { label: "Idee grezze", href: "/idee", icon: Lightbulb, badge: "ideas" },
   { label: "Contenuti", href: "/contenuti", icon: FileText, badge: "ready" },
   { label: "Immagini", href: "/immagini", icon: ImageIcon },
@@ -53,6 +55,7 @@ export default function AppSidebar({ collapsed, onToggle, onNavigate }: Props) {
   const posts = useStore((s) => s.posts);
   const openTodos = useStore((s) => s.todos.filter((t) => !t.done).length);
   const settings = useSettings();
+  const sessions = useStore((s) => s.sessions);
   const todoCount = buildAutoTasks(posts, settings).length + openTodos;
 
   return (
@@ -134,6 +137,39 @@ export default function AppSidebar({ collapsed, onToggle, onNavigate }: Props) {
                 </li>
               );
             }
+            if (item.href === "/sessioni" && sessions.length > 0)
+              return (
+                <li key={item.href}>
+                  {linkContent}
+                  <ul className="ml-[22px] mt-1 space-y-0.5 border-l border-border pl-2">
+                    {sessions.slice(0, 5).map((s) => {
+                      const active = pathname === `/sessioni/${s.id}`;
+                      return (
+                        <li key={s.id}>
+                          <Link
+                            href={`/sessioni/${s.id}`}
+                            onClick={onNavigate}
+                            title={s.title}
+                            className={cn(
+                              "block truncate rounded-md px-2 py-1 text-xs transition-colors",
+                              active ? "bg-primary/10 font-medium text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                            )}
+                          >
+                            {s.title || "Sessione senza titolo"}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                    {sessions.length > 5 && (
+                      <li>
+                        <Link href="/sessioni" onClick={onNavigate} className="block px-2 py-1 text-xs font-medium text-primary hover:underline">
+                          Tutte le {sessions.length} sessioni
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </li>
+              );
             return <li key={item.href}>{linkContent}</li>;
           })}
         </ul>

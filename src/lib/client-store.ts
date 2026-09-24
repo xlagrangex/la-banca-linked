@@ -21,6 +21,7 @@ let state: State = {
   designs: [],
   todos: [],
   settings: [],
+  sessions: [],
   loaded: false,
   pending: 0,
   dirty: 0,
@@ -46,6 +47,7 @@ export function useStore<T>(selector: (s: State) => T): T {
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
+  lastLocalChange = Date.now();
   setState({ pending: state.pending + 1 });
   try {
     const res = await fetch(url, {
@@ -66,15 +68,36 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 let loading: Promise<void> | null = null;
+let lastLocalChange = 0;
+let knownVersion = 0;
+
+async function fetchAll() {
+  const names: CollectionName[] = ["ideas", "posts", "images", "designs", "todos", "settings", "sessions"];
+  const results = await Promise.all(names.map((n) => fetch(`/api/db/${n}`).then((r) => r.json())));
+  const patch: Partial<State> = { loaded: true };
+  names.forEach((n, i) => ((patch as Record<string, unknown>)[n] = results[i]));
+  return patch;
+}
+
 export function loadAll() {
   loading ??= (async () => {
-    const names: CollectionName[] = ["ideas", "posts", "images", "designs", "todos", "settings"];
-    const results = await Promise.all(names.map((n) => fetch(`/api/db/${n}`).then((r) => r.json())));
-    const patch: Partial<State> = { loaded: true };
-    names.forEach((n, i) => ((patch as Record<string, unknown>)[n] = results[i]));
-    setState(patch);
+    knownVersion = (await fetch("/api/version").then((r) => r.json())).version;
+    setState(await fetchAll());
   })();
   return loading;
+}
+
+// Se qualcun altro (Claude Code, il bot) ha scritto nei file, ricarica, ma mai sopra
+// una modifica locale in corso o appena fatta.
+export async function syncIfChanged() {
+  if (!state.loaded || state.pending > 0 || state.dirty > 0 || Date.now() - lastLocalChange < 3000) return;
+  const { version } = await fetch("/api/version").then((r) => r.json());
+  if (version <= knownVersion) return;
+  const startedAt = Date.now();
+  const patch = await fetchAll();
+  if (lastLocalChange >= startedAt || state.pending > 0 || state.dirty > 0) return;
+  knownVersion = version;
+  setState(patch);
 }
 
 function replaceLocal<K extends CollectionName>(name: K, items: CollectionMap[K][]) {
@@ -112,6 +135,7 @@ export function updateItem<K extends CollectionName>(
   delay = 0,
 ) {
   const now = new Date().toISOString();
+  lastLocalChange = Date.now();
   replaceLocal(
     name,
     (state[name] as CollectionMap[K][]).map((x) => (x.id === id ? { ...x, ...patch, updatedAt: now } : x)),

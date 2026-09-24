@@ -157,6 +157,17 @@ export async function listBackups() {
 
 export async function snapshotAll() {
   const result: Record<string, unknown> = { exportedAt: new Date().toISOString() };
-  for (const name of ["ideas", "posts", "images", "designs", "todos", "settings"] as CollectionName[]) result[name] = await list(name);
+  for (const name of ["ideas", "posts", "images", "designs", "todos", "settings", "sessions"] as CollectionName[]) result[name] = await list(name);
   return result;
+}
+
+// Serve alla UI per accorgersi delle scritture fatte da fuori (Claude Code, bot).
+export async function dataVersion() {
+  let max = 0;
+  for (const name of ["ideas", "posts", "images", "designs", "todos", "settings", "sessions"]) {
+    try {
+      max = Math.max(max, (await fs.stat(fileOf(name))).mtimeMs);
+    } catch {}
+  }
+  return max;
 }

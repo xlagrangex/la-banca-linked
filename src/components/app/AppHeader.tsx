@@ -10,6 +10,7 @@ import { useStore } from "@/lib/client-store";
 
 const TITLES: [string, string][] = [
   ["/da-fare", "Cose da fare"],
+  ["/sessioni", "Sessioni di Claude Code"],
   ["/idee", "Banca idee grezze"],
   ["/contenuti", "Banca contenuti"],
   ["/immagini", "Banca immagini"],

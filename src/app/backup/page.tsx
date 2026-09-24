@@ -10,7 +10,7 @@ import { reloadAll } from "@/lib/client-store";
 import { fmtDate } from "@/lib/labels";
 
 type TrashEntry = { collection: string; deletedAt: string; item: { id: string; title?: string; name?: string; body?: string } };
-const COLL: Record<string, string> = { ideas: "Idea", posts: "Contenuto", images: "Immagine", designs: "Grafica", todos: "Da fare" };
+const COLL: Record<string, string> = { ideas: "Idea", posts: "Contenuto", images: "Immagine", designs: "Grafica", todos: "Da fare", sessions: "Sessione" };
 
 export default function BackupPage() {
   const [info, setInfo] = useState<{ dataDir: string; backups: { day: string; files: string[] }[] } | null>(null);

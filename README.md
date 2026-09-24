@@ -38,3 +38,18 @@ Per spostare i dati altrove (es. iCloud Drive) avvia con `BANCA_DATA_DIR=/percor
 ## Caroselli per LinkedIn
 
 Editor → Esporta → *PDF carosello*: LinkedIn li pubblica come documento. Formato consigliato 4:5 (1080×1350).
+
+## Da Claude Code: sessioni
+
+Il connettore MCP `mcp/server.mjs` fa salvare a Claude Code i risultati di una chat direttamente in banca: ogni chat crea una **sessione** (sidebar → *Sessioni*) con i post e le idee che ha prodotto e il materiale di partenza. La pagina si aggiorna da sola in pochi secondi.
+
+Registrazione (una volta sola, già fatta):
+
+```bash
+claude mcp add banca-linked -s user -- node "$PWD/mcp/server.mjs"
+```
+
+Tool: `banca_crea_sessione`, `banca_aggiorna_sessione`, `banca_salva_post`, `banca_aggiorna_post`, `banca_salva_idea`, `banca_allega_immagine`, `banca_prossima_settimana`, `banca_cerca_post`, `banca_elenca_sessioni`.
+Se la banca è spenta, il connettore la avvia da solo. Indirizzo diverso: variabile `BANCA_URL`.
+
+Nel second brain la skill `post-da-trascrizione` usa questi tool: trascrizione → post in bozza + idee → sessione in banca.

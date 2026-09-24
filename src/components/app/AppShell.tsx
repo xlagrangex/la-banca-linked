@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import { flushAll, hasQueued, loadAll, useStore } from "@/lib/client-store";
+import { flushAll, hasQueued, loadAll, syncIfChanged, useStore } from "@/lib/client-store";
 import { cn } from "@/lib/utils";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
@@ -26,11 +26,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       e.preventDefault();
     };
     const onHide = () => document.visibilityState === "hidden" && flushAll();
+    const poll = setInterval(() => syncIfChanged().catch(() => {}), 4000);
     window.addEventListener("beforeunload", onUnload);
     document.addEventListener("visibilitychange", onHide);
     return () => {
       window.removeEventListener("beforeunload", onUnload);
       document.removeEventListener("visibilitychange", onHide);
+      clearInterval(poll);
     };
   }, []);
 

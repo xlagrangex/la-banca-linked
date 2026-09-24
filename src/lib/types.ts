@@ -7,6 +7,7 @@ export interface Idea {
   pillar: string;
   tags: string[];
   status: IdeaStatus;
+  sessionId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,6 +30,7 @@ export interface Post {
   ideaId: string | null;
   imageIds: string[];
   designId: string | null;
+  sessionId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -87,6 +89,17 @@ export interface Design {
   updatedAt: string;
 }
 
+export interface Session {
+  id: string;
+  title: string;
+  source: string;
+  sourceType: string;
+  skill: string;
+  summary: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Todo {
   id: string;
   text: string;
@@ -113,7 +126,8 @@ export interface CollectionMap {
   designs: Design;
   todos: Todo;
   settings: Settings;
+  sessions: Session;
 }
 
 export type CollectionName = keyof CollectionMap;
-export const COLLECTIONS: CollectionName[] = ["ideas", "posts", "images", "designs", "todos", "settings"];
+export const COLLECTIONS: CollectionName[] = ["ideas", "posts", "images", "designs", "todos", "settings", "sessions"];

@@ -18,6 +18,7 @@ import {
   Send,
   ExternalLink,
   ImageOff,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +47,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
   const images = useStore((s) => s.images);
   const design = useStore((s) => (post?.designId ? s.designs.find((d) => d.id === post.designId) : undefined));
   const idea = useStore((s) => (post?.ideaId ? s.ideas.find((i) => i.id === post.ideaId) : undefined));
+  const session = useStore((s) => (post?.sessionId ? s.sessions.find((x) => x.id === post.sessionId) : undefined));
   const [pickerOpen, setPickerOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -296,6 +298,15 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
                     )}
                   </div>
                 </div>
+              )}
+              {session && (
+                <Link
+                  href={`/sessioni/${session.id}`}
+                  className="flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-2 text-xs text-primary hover:bg-primary/10"
+                >
+                  <Sparkles className="h-4 w-4 shrink-0" />
+                  <span className="truncate">Nato dalla sessione: {session.title}</span>
+                </Link>
               )}
               {idea && (
                 <Link href="/idee" className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 hover:bg-amber-100">

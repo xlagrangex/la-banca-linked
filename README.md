@@ -76,3 +76,9 @@ Tool: `banca_crea_sessione`, `banca_aggiorna_sessione`, `banca_salva_post`, `ban
 Se la banca è spenta, il connettore la avvia da solo. Indirizzo diverso: variabile `BANCA_URL`.
 
 Nel second brain la skill `post-da-trascrizione` usa questi tool: trascrizione → post in bozza + idee → sessione in banca.
+
+## Online e LinkedIn (variabili in `.env.local`, mai in git)
+
+- `BANCA_PASSWORD`: se c'è, la banca chiede la password al browser (serve quando è online). In locale non si imposta.
+- `BANCA_TOKEN`: token per i connettori (Claude Code, Hermes): lo passano come `BANCA_TOKEN` al server MCP insieme a `BANCA_URL`. `BANCA_PUBLIC_URL` è l'indirizzo da usare nei link che il connettore restituisce.
+- `ROBINREACH_API_KEY`: attiva il pulsante *Programma su LinkedIn* (Contenuti, pagina del post, Piano editoriale). Senza chiave il pulsante avvisa che RobinReach non è configurato.

@@ -5,7 +5,9 @@ export async function POST(req: Request) {
   const expected = process.env.BANCA_PASSWORD;
   if (!expected) return NextResponse.json({ ok: true });
   const { password } = await req.json().catch(() => ({ password: "" }));
-  if (typeof password !== "string" || !safeEqual(password, expected)) {
+  // Dal telefono la tastiera mette maiuscole, spazi in fondo o trattini "intelligenti": non devono contare.
+  const norm = (v: string) => v.normalize("NFKC").trim().toLowerCase().replace(/[\u2010-\u2015\u2212]/g, "-");
+  if (typeof password !== "string" || !safeEqual(norm(password), norm(expected))) {
     await new Promise((r) => setTimeout(r, 800));
     return NextResponse.json({ error: "Password sbagliata" }, { status: 401 });
   }

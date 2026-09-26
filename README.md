@@ -14,9 +14,24 @@ Pannello locale per gestire i contenuti LinkedIn: idee grezze, post scritti, pia
 - **Tipo di immagine** (indipendente dal tipo di post): selfie, screen, foto del PC con schermata, immagine statica, carosello.
 - Tipologie di post: da definire.
 
+## Installazione su un altro computer
+
+La banca gira in locale: ognuno ha la sua, con i suoi contenuti. Chi la scarica parte da una banca vuota.
+
+1. Installa **Node.js** (versione LTS) da https://nodejs.org. Una volta sola.
+2. Scarica la banca: su GitHub → *Code* → *Download ZIP*, poi estrai la cartella dove vuoi (es. Documenti).
+3. Avviala:
+   - **Mac**: doppio clic su `Avvia La banca Linked.command`. La prima volta macOS può bloccarlo: tasto destro → *Apri* → *Apri*.
+   - **Windows**: doppio clic su `Avvia La banca Linked.bat`. Se Windows mostra "PC protetto": *Ulteriori informazioni* → *Esegui comunque*.
+4. Il primo avvio installa i pacchetti e ci mette qualche minuto; poi il browser si apre da solo su http://localhost:3210.
+
+Finché la banca è accesa la finestra del terminale resta aperta: chiudendola si spegne la banca (i dati restano salvati).
+
+Per aggiornarla a una versione nuova: scarica di nuovo lo ZIP e copia dentro la cartella `data/` della vecchia installazione, che contiene tutti i contenuti.
+
 ## Avvio
 
-Doppio clic su `Avvia La banca Linked.command`, oppure:
+Doppio clic su `Avvia La banca Linked.command` (Mac) o `Avvia La banca Linked.bat` (Windows), oppure:
 
 ```bash
 npm run dev

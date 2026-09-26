@@ -60,10 +60,16 @@ Editor → Esporta → *PDF carosello*: LinkedIn li pubblica come documento. For
 
 Il connettore MCP `mcp/server.mjs` fa salvare a Claude Code i risultati di una chat direttamente in banca: ogni chat crea una **sessione** (sidebar → *Sessioni*) con i post e le idee che ha prodotto e il materiale di partenza. La pagina si aggiorna da sola in pochi secondi.
 
-Registrazione (una volta sola, già fatta):
+Registrazione (una volta sola per computer, dalla cartella della banca, dopo il primo avvio che installa i pacchetti):
 
 ```bash
 claude mcp add banca-linked -s user -- node "$PWD/mcp/server.mjs"
+```
+
+Su Windows, da PowerShell nella cartella della banca:
+
+```powershell
+claude mcp add banca-linked -s user -- node "$PWD\mcp\server.mjs"
 ```
 
 Tool: `banca_crea_sessione`, `banca_aggiorna_sessione`, `banca_salva_post`, `banca_aggiorna_post`, `banca_salva_idea`, `banca_allega_immagine`, `banca_prossima_settimana`, `banca_cerca_post`, `banca_elenca_sessioni`.

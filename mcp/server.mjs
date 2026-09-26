@@ -38,13 +38,20 @@ async function ensureUp() {
   if (await isUp()) return;
   if (!BASE.includes("localhost")) throw new Error(`La banca non risponde su ${BASE}.`);
   starting ??= (async () => {
-    const child = spawn("npm", ["run", "dev"], { cwd: PROJECT_DIR, detached: true, stdio: "ignore" });
+    // Su Windows npm è un .cmd: senza shell spawn fallisce con ENOENT/EINVAL.
+    const child = spawn("npm", ["run", "dev"], {
+      cwd: PROJECT_DIR,
+      detached: true,
+      stdio: "ignore",
+      shell: process.platform === "win32",
+      windowsHide: true,
+    });
     child.unref();
     for (let i = 0; i < 40; i++) {
       await new Promise((r) => setTimeout(r, 750));
       if (await isUp()) return;
     }
-    throw new Error("Non riesco ad avviare La banca Linked: aprila con 'Avvia La banca Linked.command'.");
+    throw new Error("Non riesco ad avviare La banca Linked: aprila con 'Avvia La banca Linked' (.command su Mac, .bat su Windows).");
   })();
   try {
     await starting;
@@ -233,7 +240,7 @@ server.registerTool(
     description: "Carica un file immagine dal disco nella banca immagini e lo collega al post (toglie il segnale 'Immagine mancante').",
     inputSchema: {
       post_id: z.string(),
-      percorso_file: z.string().describe("Percorso assoluto del file immagine sul Mac"),
+      percorso_file: z.string().describe("Percorso assoluto del file immagine sul computer"),
       tag: z.array(z.string()).optional(),
     },
   },

@@ -23,7 +23,7 @@ const PILASTRI = [
   "Analisi & rifacimenti",
   "Dietro le quinte",
 ];
-const FUNNEL = z.enum(["tofu", "mofu", "bofu"]);
+const FUNNEL = z.enum(["tofu-puro", "tofu-ponte", "mofu", "bofu"]);
 const TIPO_IMMAGINE = z.enum(["selfie", "screen", "foto-pc", "statica", "carosello"]);
 const DATA_ORA = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "formato AAAA-MM-GGTHH:mm");
 
@@ -148,7 +148,7 @@ server.registerTool(
       titolo: z.string().describe("Titolo interno (non pubblicato), riconoscibile"),
       testo: z.string().describe("Testo completo del post, pronto da incollare su LinkedIn (max 3000 caratteri)"),
       pilastro: z.string().optional().describe(`Uno di: ${PILASTRI.join(" | ")}`),
-      funnel: FUNNEL.optional().describe("tofu, mofu o bofu"),
+      funnel: FUNNEL.optional().describe("tofu-puro (non parla del lavoro), tofu-ponte (ci arriva di sponda), mofu o bofu"),
       tipo_immagine: TIPO_IMMAGINE.optional().describe("selfie, screen, foto-pc (foto del PC con schermata), statica, carosello"),
       stato: z.enum(["bozza", "pronto"]).optional(),
       data_uscita: DATA_ORA.optional().describe("Se va programmato: AAAA-MM-GGTHH:mm (ora locale)"),

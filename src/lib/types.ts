@@ -13,7 +13,7 @@ export interface Idea {
 }
 
 export type PostStatus = "bozza" | "pronto" | "programmato" | "pubblicato";
-export type Funnel = "tofu" | "mofu" | "bofu";
+export type Funnel = "tofu-puro" | "tofu-ponte" | "mofu" | "bofu";
 export type VisualType = "selfie" | "screen" | "foto-pc" | "statica" | "carosello";
 
 export interface RobinReachLink {

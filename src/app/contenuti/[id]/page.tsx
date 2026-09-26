@@ -283,7 +283,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
               </div>
               <div className="space-y-2">
                 <Label>Funnel</Label>
-                <div className="grid grid-cols-3 gap-1 rounded-lg border p-1">
+                <div className="grid grid-cols-2 gap-1 rounded-lg border p-1">
                   {(Object.keys(FUNNEL) as Funnel[]).map((f) => (
                     <button
                       key={f}

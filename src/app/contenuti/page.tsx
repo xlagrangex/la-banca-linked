@@ -135,7 +135,7 @@ export default function ContenutiPage() {
         </div>
         </div>
         <div className="flex rounded-lg border bg-white p-1">
-          {(["tutti", "tofu", "mofu", "bofu"] as const).map((f) => (
+          {(["tutti", "tofu-puro", "tofu-ponte", "mofu", "bofu"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFunnel(f)}

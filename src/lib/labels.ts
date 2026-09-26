@@ -34,9 +34,10 @@ export const POST_STATUS: Record<PostStatus, { label: string; color: string; dot
 };
 
 export const FUNNEL: Record<Funnel, { label: string; hint: string; color: string }> = {
-  tofu: { label: "TOFU", hint: "Top of funnel", color: "bg-sky-100 text-sky-800 ring-sky-200" },
-  mofu: { label: "MOFU", hint: "Middle of funnel", color: "bg-amber-100 text-amber-800 ring-amber-200" },
-  bofu: { label: "BOFU", hint: "Bottom of funnel", color: "bg-emerald-100 text-emerald-800 ring-emerald-200" },
+  "tofu-puro": { label: "TOFU puro", hint: "Non parla del lavoro: storia personale, identità, opinione su un tema ampio", color: "bg-sky-100 text-sky-800 ring-sky-200" },
+  "tofu-ponte": { label: "TOFU ponte", hint: "Arriva al lavoro di sponda: novità di settore, analisi di terzi, collaborazioni, risorse regalate", color: "bg-cyan-100 text-cyan-800 ring-cyan-200" },
+  mofu: { label: "MOFU", hint: "Problemi, obiezioni e desideri del target legati ai servizi", color: "bg-amber-100 text-amber-800 ring-amber-200" },
+  bofu: { label: "BOFU", hint: "Caso studio, testimonianza, offerta, richiesta di un'azione", color: "bg-emerald-100 text-emerald-800 ring-emerald-200" },
 };
 
 // Il tipo di immagine è indipendente dal tipo di post.

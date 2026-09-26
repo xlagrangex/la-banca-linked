@@ -10,7 +10,7 @@ Pannello locale per gestire i contenuti LinkedIn: idee grezze, post scritti, pia
 
 ## Tag del post
 
-- **Funnel**: TOFU / MOFU / BOFU.
+- **Funnel** (divisione di Antonio Benedetto): TOFU puro (non parla del lavoro) / TOFU ponte (ci arriva di sponda) / MOFU / BOFU.
 - **Tipo di immagine** (indipendente dal tipo di post): selfie, screen, foto del PC con schermata, immagine statica, carosello.
 - Tipologie di post: da definire.
 

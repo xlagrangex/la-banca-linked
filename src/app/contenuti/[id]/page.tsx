@@ -37,6 +37,8 @@ import { FUNNEL, LINKEDIN_FOLD, LINKEDIN_MAX, POST_STATUS, VISUAL_TYPE } from "@
 import type { Funnel, Post, PostStatus, VisualType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import IssueBadges from "@/components/app/IssueBadges";
+import { RobinReachBadge, RobinReachDialog } from "@/components/app/RobinReach";
+import { isQueued, rescheduleOnRobinReach } from "@/lib/robinreach-client";
 import FunnelBadge from "@/components/app/FunnelBadge";
 import { hasVisual } from "@/lib/readiness";
 import { useSettings } from "@/lib/settings";
@@ -52,6 +54,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
   const session = useStore((s) => (post?.sessionId ? s.sessions.find((x) => x.id === post.sessionId) : undefined));
   const [pickerOpen, setPickerOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [sending, setSending] = useState(false);
 
   if (!post)
     return (
@@ -69,6 +72,18 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
     if (value && (post.status === "bozza" || post.status === "pronto")) patch.status = "programmato";
     if (!value && post.status === "programmato") patch.status = "pronto";
     set(patch);
+  };
+
+  // In coda su RobinReach: la nuova data si manda quando si esce dal campo, non a ogni tasto.
+  const syncSchedule = async () => {
+    if (!isQueued(post) || !post.scheduledFor || post.scheduledFor === post.robinreach?.publishTime) return;
+    if (new Date(post.scheduledFor).getTime() < Date.now()) {
+      toast.error("La data è passata: su LinkedIn resta quella di prima");
+      return;
+    }
+    const r = await rescheduleOnRobinReach(post.id);
+    if (r.ok) toast.success("Data aggiornata anche su LinkedIn");
+    else toast.error("Data cambiata qui, ma non su RobinReach", { description: r.error });
   };
 
   const setStatus = (status: PostStatus) => {
@@ -108,11 +123,17 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <FunnelBadge funnel={post.funnel} />
               <IssueBadges post={post} />
+              <RobinReachBadge post={post} />
               <p className="text-sm text-muted-foreground">Ogni modifica si salva da sola, in locale.</p>
             </div>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          {post.status !== "pubblicato" && (
+            <Button onClick={() => setSending(true)}>
+              <Send className="h-4 w-4" /> {isQueued(post) ? "Aggiorna su LinkedIn" : "Programma su LinkedIn"}
+            </Button>
+          )}
           <Button variant="outline" onClick={copyText}>
             <Copy className="h-4 w-4" /> Copia testo
           </Button>
@@ -284,7 +305,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
               </div>
               <div className="space-y-2">
                 <Label>Data e ora di uscita</Label>
-                <Input type="datetime-local" value={post.scheduledFor ?? ""} onChange={(e) => setSchedule(e.target.value)} />
+                <Input type="datetime-local" value={post.scheduledFor ?? ""} onChange={(e) => setSchedule(e.target.value)} onBlur={syncSchedule} />
               </div>
               {post.status === "pubblicato" && (
                 <div className="space-y-2">
@@ -396,6 +417,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
         initial={post.imageIds}
         onPick={(ids) => set({ imageIds: ids })}
       />
+      <RobinReachDialog posts={[post]} open={sending} onOpenChange={setSending} />
     </div>
   );
 }

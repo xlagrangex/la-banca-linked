@@ -56,7 +56,7 @@ export default function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }
   const title = TITLES.find(([p]) => pathname.startsWith(p))?.[1] ?? "Pannello contenuti";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-white px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-white px-3 sm:px-6">
       <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuToggle}>
         <Menu className="h-5 w-5" />
       </Button>
@@ -65,7 +65,7 @@ export default function AppHeader({ onMenuToggle }: { onMenuToggle: () => void }
         <h2 className="font-heading text-lg font-semibold text-secondary">{title}</h2>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1 sm:gap-3">
         <SaveStatus />
         <Button variant="ghost" size="icon" asChild title="Backup e dati">
           <Link href="/backup">

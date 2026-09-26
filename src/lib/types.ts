@@ -16,6 +16,14 @@ export type PostStatus = "bozza" | "pronto" | "programmato" | "pubblicato";
 export type Funnel = "tofu" | "mofu" | "bofu";
 export type VisualType = "selfie" | "screen" | "foto-pc" | "statica" | "carosello";
 
+export interface RobinReachLink {
+  id: number;
+  status: "scheduled" | "published" | "failed" | "draft" | "unknown";
+  publishTime: string;
+  syncedAt: string;
+  error?: string;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -31,6 +39,7 @@ export interface Post {
   imageIds: string[];
   designId: string | null;
   sessionId?: string | null;
+  robinreach?: RobinReachLink | null;
   createdAt: string;
   updatedAt: string;
 }

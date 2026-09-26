@@ -61,7 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className={cn("transition-all duration-300", collapsed ? "lg:ml-16" : "lg:ml-64")}>
           <AppHeader onMenuToggle={() => setMobileOpen(true)} />
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {loaded ? (
               children
             ) : (

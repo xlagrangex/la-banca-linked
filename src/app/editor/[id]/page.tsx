@@ -350,7 +350,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
   const thumbScale = 150 / w;
 
   return (
-    <div className="-m-6 flex h-[calc(100vh-4rem)] flex-col">
+    <div className="-m-4 flex flex-col sm:-m-6 lg:h-[calc(100vh-4rem)]">
       <div className="flex flex-wrap items-center gap-2 border-b bg-white px-4 py-2.5">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/editor">
@@ -459,14 +459,14 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1">
-        <aside className="w-[196px] shrink-0 overflow-y-auto border-r bg-white p-3">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <aside className="shrink-0 overflow-x-auto border-b bg-white p-3 lg:w-[196px] lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <p className="mb-2 px-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {design.kind === "carosello" ? `Slide · ${slides.length}` : "Grafica"}
           </p>
-          <div className="space-y-3">
+          <div className="flex gap-3 lg:block lg:space-y-3">
             {slides.map((s, i) => (
-              <div key={s.id} className="group relative">
+              <div key={s.id} className="group relative shrink-0">
                 <button
                   onClick={() => {
                     setSlideIdx(i);
@@ -493,7 +493,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="mt-3 w-full">
+              <Button variant="outline" size="sm" className="mt-3 w-full max-w-[150px] lg:max-w-none">
                 <Plus className="h-4 w-4" /> Slide
               </Button>
             </DropdownMenuTrigger>
@@ -507,14 +507,14 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
           </DropdownMenu>
         </aside>
 
-        <main className="flex min-w-0 flex-1 flex-col bg-muted/40 p-4">
+        <main className="flex min-w-0 flex-1 flex-col bg-muted/40 p-2 sm:p-4">
           <EditorCanvas slide={slide} format={design.format} selectedId={selectedId} onSelect={setSelectedId} onChange={patchEl} />
           <p className="mt-2 text-center text-xs text-muted-foreground">
             Doppio clic su un testo per scriverci dentro · frecce per spostare · ⌘D duplica · ⌫ elimina · ⌘Z annulla
           </p>
         </main>
 
-        <aside className="w-[300px] shrink-0 overflow-y-auto border-l bg-white">
+        <aside className="shrink-0 border-t bg-white lg:w-[300px] lg:overflow-y-auto lg:border-l lg:border-t-0">
           {selected ? (
             <>
               <div className="flex items-center justify-between border-b px-4 py-3">

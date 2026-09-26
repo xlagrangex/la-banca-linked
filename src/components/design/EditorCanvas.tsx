@@ -34,7 +34,7 @@ export default function EditorCanvas({ slide, format, selectedId, onSelect, onCh
     const el = wrapRef.current;
     if (!el) return;
     const fit = () => {
-      const availW = el.clientWidth - 48;
+      const availW = el.clientWidth - (el.clientWidth < 640 ? 16 : 48);
       const availH = Math.max(420, window.innerHeight - 190);
       setScale(Math.min(availW / w, availH / h, 1));
     };
@@ -121,6 +121,7 @@ export default function EditorCanvas({ slide, format, selectedId, onSelect, onCh
                 onDoubleClick={() => el.type === "text" && setEditingId(el.id)}
                 style={{
                   position: "absolute",
+                  touchAction: selected ? "none" : "auto",
                   left: el.x,
                   top: el.y,
                   width: el.w,

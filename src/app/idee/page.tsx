@@ -87,7 +87,7 @@ export default function IdeePage() {
       </form>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border bg-white p-1">
+        <div className="flex max-w-full overflow-x-auto rounded-lg border bg-white p-1">
           {TABS.map((t) => {
             const count = t === "tutte" ? ideas.length : ideas.filter((i) => i.status === t).length;
             return (
@@ -95,7 +95,7 @@ export default function IdeePage() {
                 key={t}
                 onClick={() => setTab(t)}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  "whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   tab === t ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -106,7 +106,7 @@ export default function IdeePage() {
           })}
         </div>
         <Select value={pillar} onValueChange={setPillar}>
-          <SelectTrigger className="w-60 bg-white">
+          <SelectTrigger className="w-full bg-white sm:w-60">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

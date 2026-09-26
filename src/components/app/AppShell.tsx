@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { flushAll, hasQueued, loadAll, syncIfChanged, useStore } from "@/lib/client-store";
@@ -9,6 +10,12 @@ import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname === "/login") return <>{children}</>;
+  return <Shell>{children}</Shell>;
+}
+
+function Shell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const loaded = useStore((s) => s.loaded);

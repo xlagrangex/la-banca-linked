@@ -10,6 +10,10 @@ import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
 const BASE = (process.env.BANCA_URL ?? "http://localhost:3210").replace(/\/$/, "");
+// Indirizzo da mettere nei link restituiti (es. quello pubblico quando BANCA_URL è 127.0.0.1 sulla VPS).
+const PUBLIC = (process.env.BANCA_PUBLIC_URL ?? BASE).replace(/\/$/, "");
+// Con la banca online serve il token (BANCA_TOKEN); in locale no.
+const AUTH = process.env.BANCA_TOKEN ? { Authorization: `Bearer ${process.env.BANCA_TOKEN}` } : {};
 const PROJECT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const PILASTRI = [
@@ -25,7 +29,7 @@ const DATA_ORA = z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "formato AA
 
 async function isUp() {
   try {
-    const r = await fetch(`${BASE}/api/version`, { signal: AbortSignal.timeout(1500) });
+    const r = await fetch(`${BASE}/api/version`, { headers: AUTH, signal: AbortSignal.timeout(3000) });
     return r.ok;
   } catch {
     return false;
@@ -36,7 +40,7 @@ async function isUp() {
 let starting = null;
 async function ensureUp() {
   if (await isUp()) return;
-  if (!BASE.includes("localhost")) throw new Error(`La banca non risponde su ${BASE}.`);
+  if (!/localhost|127\.0\.0\.1/.test(BASE) || process.env.BANCA_TOKEN) throw new Error(`La banca non risponde su ${BASE}.`);
   starting ??= (async () => {
     // Su Windows npm è un .cmd: senza shell spawn fallisce con ENOENT/EINVAL.
     const child = spawn("npm", ["run", "dev"], {
@@ -64,7 +68,7 @@ async function api(method, url, body) {
   await ensureUp();
   const res = await fetch(`${BASE}${url}`, {
     method,
-    headers: body instanceof FormData ? undefined : { "Content-Type": "application/json" },
+    headers: body instanceof FormData ? AUTH : { ...AUTH, "Content-Type": "application/json" },
     body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`${method} ${url} → ${res.status} ${await res.text()}`);
@@ -113,7 +117,7 @@ server.registerTool(
       skill: skill ?? "",
       summary: sintesi ?? "",
     });
-    return ok({ session_id: s.id, url: `${BASE}/sessioni/${s.id}` });
+    return ok({ session_id: s.id, url: `${PUBLIC}/sessioni/${s.id}` });
   }),
 );
 
@@ -129,7 +133,7 @@ server.registerTool(
     if (titolo !== undefined) patch.title = titolo;
     if (sintesi !== undefined) patch.summary = sintesi;
     await api("PUT", `/api/db/sessions/${session_id}`, patch);
-    return ok({ aggiornata: session_id, url: `${BASE}/sessioni/${session_id}` });
+    return ok({ aggiornata: session_id, url: `${PUBLIC}/sessioni/${session_id}` });
   }),
 );
 
@@ -169,7 +173,7 @@ server.registerTool(
       designId: null,
       sessionId: a.session_id ?? null,
     });
-    return ok({ post_id: p.id, stato: p.status, avvisi: avvisi(p), url: `${BASE}/contenuti/${p.id}` });
+    return ok({ post_id: p.id, stato: p.status, avvisi: avvisi(p), url: `${PUBLIC}/contenuti/${p.id}` });
   }),
 );
 
@@ -318,7 +322,7 @@ server.registerTool(
         data: s.createdAt,
         post: posts.filter((p) => p.sessionId === s.id).length,
         idee: ideas.filter((i) => i.sessionId === s.id).length,
-        url: `${BASE}/sessioni/${s.id}`,
+        url: `${PUBLIC}/sessioni/${s.id}`,
       })),
     );
   }),

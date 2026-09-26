@@ -46,7 +46,7 @@ function SaveStatus() {
   return (
     <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
       <Check className="h-3.5 w-3.5" />
-      {ago === null ? "Tutto salvato in locale" : ago < 1 ? "Salvato ora" : `Salvato ${ago} min fa`}
+      {ago === null ? "Tutto salvato" : ago < 1 ? "Salvato ora" : `Salvato ${ago} min fa`}
     </span>
   );
 }

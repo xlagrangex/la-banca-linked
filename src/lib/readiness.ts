@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS: Omit<Settings, "id" | "createdAt" | "updatedAt"> 
   postsPerWeek: 3,
   postingDays: [1, 3, 5],
   postingTime: "09:00",
+  signature: "vincenzo",
 };
 
 export const hasVisual = (p: Post) => p.imageIds.length > 0 || !!p.designId;

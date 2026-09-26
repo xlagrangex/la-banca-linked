@@ -39,11 +39,13 @@ import { cn } from "@/lib/utils";
 import IssueBadges from "@/components/app/IssueBadges";
 import FunnelBadge from "@/components/app/FunnelBadge";
 import { hasVisual } from "@/lib/readiness";
+import { useSettings } from "@/lib/settings";
 
 export default function PostEditor({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const post = useStore((s) => s.posts.find((p) => p.id === id));
+  const { signature } = useSettings();
   const images = useStore((s) => s.images);
   const design = useStore((s) => (post?.designId ? s.designs.find((d) => d.id === post.designId) : undefined));
   const idea = useStore((s) => (post?.ideaId ? s.ideas.find((i) => i.id === post.ideaId) : undefined));
@@ -80,7 +82,7 @@ export default function PostEditor({ params }: { params: Promise<{ id: string }>
 
   const createDesign = async () => {
     const kind = post.visualType === "carosello" ? "carosello" : "statica";
-    const d = await createItem("designs", newDesign(kind, "portrait", post.title || "Grafica post"));
+    const d = await createItem("designs", newDesign(kind, "portrait", signature, post.title || "Grafica post"));
     await set({ designId: d.id, visualType: post.visualType && VISUAL_TYPE[post.visualType].needsDesign ? post.visualType : kind });
     router.push(`/editor/${d.id}`);
   };

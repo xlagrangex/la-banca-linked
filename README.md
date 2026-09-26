@@ -25,6 +25,8 @@ La banca gira in locale: ognuno ha la sua, con i suoi contenuti. Chi la scarica 
    - **Windows**: doppio clic su `Avvia La banca Linked.bat`. Se Windows mostra "PC protetto": *Ulteriori informazioni* → *Esegui comunque*.
 4. Il primo avvio installa i pacchetti e ci mette qualche minuto; poi il browser si apre da solo su http://localhost:3210.
 
+5. In *Editor grafiche*, in alto, scegli la tua **Firma** (es. *Federico Chianesi*): da lì in poi ogni grafica nuova ha il tuo nome, il tuo ruolo e la tua foto nella card in basso.
+
 Finché la banca è accesa la finestra del terminale resta aperta: chiudendola si spegne la banca (i dati restano salvati).
 
 Per aggiornarla a una versione nuova: scarica di nuovo lo ZIP e copia dentro la cartella `data/` della vecchia installazione, che contiene tutti i contenuti.

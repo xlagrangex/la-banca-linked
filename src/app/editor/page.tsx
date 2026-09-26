@@ -9,18 +9,22 @@ import PageHeader, { EmptyState } from "@/components/app/PageHeader";
 import SlideView, { FORMATS } from "@/components/design/SlideView";
 import { withoutMeta } from "@/lib/factories";
 import { createItem, deleteItem, useStore } from "@/lib/client-store";
-import { newDesign } from "@/lib/design-templates";
+import { newDesign, SIGNATURES } from "@/lib/design-templates";
+import { saveSettings, useSettings } from "@/lib/settings";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmtDate } from "@/lib/labels";
-import type { Design } from "@/lib/types";
+import type { Design, Signature } from "@/lib/types";
 
 const THUMB = 260;
 
 export default function EditorList() {
   const router = useRouter();
   const designs = useStore((s) => s.designs);
+  const savedSettings = useStore((s) => s.settings[0]);
+  const { signature } = useSettings();
 
   const create = async (kind: Design["kind"]) => {
-    const d = await createItem("designs", newDesign(kind, "linkedin"));
+    const d = await createItem("designs", newDesign(kind, "linkedin", signature));
     router.push(`/editor/${d.id}`);
   };
 
@@ -32,6 +36,18 @@ export default function EditorList() {
   return (
     <div className="space-y-6">
       <PageHeader title="Editor grafiche" subtitle="Grafiche statiche e caroselli per LinkedIn, salvati in locale">
+        <Select value={signature} onValueChange={(v) => saveSettings({ signature: v as Signature }, savedSettings)}>
+          <SelectTrigger className="w-[210px]" aria-label="Firma delle grafiche">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {(Object.keys(SIGNATURES) as Signature[]).map((k) => (
+              <SelectItem key={k} value={k}>
+                Firma: {SIGNATURES[k].label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button variant="outline" onClick={() => create("statica")}>
           <Square className="h-4 w-4" /> Nuova grafica statica
         </Button>

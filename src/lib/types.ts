@@ -115,11 +115,14 @@ export interface Todo {
   updatedAt: string;
 }
 
+export type Signature = "vincenzo" | "federico";
+
 export interface Settings {
   id: string;
   postsPerWeek: number;
   postingDays: number[];
   postingTime: string;
+  signature: Signature;
   createdAt: string;
   updatedAt: string;
 }

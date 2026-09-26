@@ -66,6 +66,7 @@ import {
 } from "@/lib/design-templates";
 import type { DesignElement, DesignFormat, Slide } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/lib/settings";
 
 function ColorField({ value, onChange, swatches = SWATCHES }: { value: string; onChange: (v: string) => void; swatches?: string[] }) {
   return (
@@ -118,6 +119,7 @@ function Num({ label, value, onChange }: { label: string; value: number; onChang
 export default function DesignEditor({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const design = useStore((s) => s.designs.find((d) => d.id === id));
+  const { signature } = useSettings();
   const linkedPost = useStore((s) => s.posts.find((p) => p.designId === id));
   const images = useStore((s) => s.images);
   const [slideIdx, setSlideIdx] = useState(0);
@@ -253,7 +255,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
   const setDesign = (patch: Parameters<typeof updateItem<"designs">>[2]) => updateItem("designs", design.id, patch, 500);
 
   const addSlide = (key: TemplateKey) => {
-    const s = makeSlide(key, design.format);
+    const s = makeSlide(key, design.format, signature);
     const next = [...slides.slice(0, slideIdx + 1), s, ...slides.slice(slideIdx + 1)];
     save(next);
     if (design.kind === "statica" && next.length > 1) setDesign({ kind: "carosello" });
@@ -723,7 +725,7 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        const fresh = makeSlide(t.key, design.format);
+                        const fresh = makeSlide(t.key, design.format, signature);
                         patchSlide({ ...fresh, id: slide.id });
                       }}
                     >

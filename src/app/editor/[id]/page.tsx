@@ -52,6 +52,7 @@ import SlideView, { FORMATS } from "@/components/design/SlideView";
 import { imageUrl, updateItem, uploadImages, useStore } from "@/lib/client-store";
 import {
   BACKGROUNDS,
+  ACCENT_BOLD,
   BIZ_GRADIENT,
   makeSlide,
   pillButton,
@@ -592,18 +593,30 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
                   </Section>
                   <Section title="Colore">
                     <ColorField swatches={TEXT_SWATCHES} value={selected.color ?? "#000000"} onChange={(v) => patchEl(selected.id, { color: v })} />
-                    <label className="flex items-start gap-2 text-xs">
-                      <input
-                        type="checkbox"
-                        className="mt-0.5"
-                        checked={!!selected.accent}
-                        onChange={(e) => patchEl(selected.id, { accent: e.target.checked ? BIZ_GRADIENT : undefined })}
-                      />
+                    <div className="space-y-1.5 text-xs">
                       <span>
-                        Sfumatura sulle parole tra <code className="rounded bg-muted px-1">*asterischi*</code>
+                        Parole tra <code className="rounded bg-muted px-1">*asterischi*</code>
                         <span className="block text-muted-foreground">Es. «Esempio per *Post Linkedin*»</span>
                       </span>
-                    </label>
+                      <div className="grid grid-cols-3 gap-1 rounded-lg border p-1">
+                        {([
+                          ["Normali", undefined],
+                          ["Sfumatura", BIZ_GRADIENT],
+                          ["Grassetto", ACCENT_BOLD],
+                        ] as const).map(([label, value]) => (
+                          <button
+                            key={label}
+                            onClick={() => patchEl(selected.id, { accent: value })}
+                            className={cn(
+                              "rounded-md py-1.5 font-medium transition-colors",
+                              (selected.accent ?? undefined) === value ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted",
+                            )}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </Section>
                 </>
               )}

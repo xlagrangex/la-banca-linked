@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
+import { ACCENT_BOLD } from "@/lib/design-templates";
 import { imageUrl, useStore } from "@/lib/client-store";
 import type { DesignElement, DesignFormat, Slide } from "@/lib/types";
 
@@ -34,16 +35,18 @@ export function textStyle(el: DesignElement): React.CSSProperties {
   };
 }
 
-// Le parti tra *asterischi* prendono il colore d'accento (una sfumatura o un colore pieno).
+// Le parti tra *asterischi* prendono il colore d'accento (una sfumatura o un colore pieno), o il grassetto.
 function AccentText({ text, accent }: { text: string; accent?: string }) {
   if (!accent) return <>{text}</>;
+  const style: React.CSSProperties =
+    accent === ACCENT_BOLD ? { fontWeight: 700 } : { backgroundImage: accent, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" };
   return (
     <>
       {text.split(/(\*[^*]+\*)/g).map((part, i) =>
         part.startsWith("*") && part.endsWith("*") && part.length > 2 ? (
           <span
             key={i}
-            style={{ backgroundImage: accent, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}
+            style={style}
           >
             {part.slice(1, -1)}
           </span>

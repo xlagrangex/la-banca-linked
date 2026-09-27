@@ -4,6 +4,8 @@ import type { Design, DesignElement, DesignFormat, Signature, Slide } from "./ty
 // coordinate, corpi e spaziature sono quelli letti dal file Canva, non arrotondati.
 
 export const BIZ_GRADIENT = "linear-gradient(90deg, #2f6bff 0%, #e21ecf 50%, #ff7a1a 100%)";
+// Accento "grassetto": le parole tra asterischi restano del colore del testo ma in bold.
+export const ACCENT_BOLD = "bold";
 export const BIZ_FONT = "'Inter 18pt'";
 
 export const INK = "#0F1015";

@@ -321,7 +321,11 @@ export default function DesignEditor({ params }: { params: Promise<{ id: string 
   const exportPng = (all: boolean) =>
     run(async () => {
       const urls = await renderSlides("png", all ? undefined : slideIdx);
-      urls.forEach((u, i) => download(u, `${safeName}${urls.length > 1 ? `-${String(i + 1).padStart(2, "0")}` : ""}.png`));
+      // Chrome blocca i download oltre il decimo se partono tutti insieme: si distanziano.
+      for (const [i, u] of urls.entries()) {
+        download(u, `${safeName}${urls.length > 1 ? `-${String(i + 1).padStart(2, "0")}` : ""}.png`);
+        if (i < urls.length - 1) await new Promise((r) => setTimeout(r, 400));
+      }
       toast.success(urls.length > 1 ? `${urls.length} PNG esportati` : "PNG esportato");
     });
 
